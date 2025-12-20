@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
     const currentProfessions = new Set<string>()
     partnerships.forEach((p) => {
       const partnerProfile = p.initiatorId === session.user.id 
-        ? p.receiver.profile 
+        ? p.receiver?.profile 
         : p.initiator.profile
       if (partnerProfile?.profession) {
         currentProfessions.add(partnerProfile.profession)
