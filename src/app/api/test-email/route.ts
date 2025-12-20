@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         message: "Test email sent successfully! Check your inbox.",
-        emailId: result.data?.id || 'unknown',
+        emailId: (result.data as any)?.data?.id || 'unknown',
         from: process.env.EMAIL_FROM || 'noreply@spotlightcircles.com',
         to: email,
       })
