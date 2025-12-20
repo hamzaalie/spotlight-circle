@@ -1,7 +1,7 @@
 "use client"
 export const dynamic = "force-dynamic";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -16,7 +16,16 @@ const TOTAL_STEPS = 5
 
 export default function OnboardingPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
+  // Wrap useSearchParams in Suspense
+  return (
+    <Suspense fallback={null}>
+      <OnboardingPageContent router={router} />
+    </Suspense>
+  );
+}
+
+function OnboardingPageContent({ router }: { router: ReturnType<typeof useRouter> }) {
+  const searchParams = useSearchParams();
   const inviteId = searchParams.get("invite")
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)

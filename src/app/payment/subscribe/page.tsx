@@ -1,7 +1,7 @@
 "use client"
 export const dynamic = "force-dynamic";
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -44,7 +44,16 @@ const PLANS = [
 
 export default function SubscribePage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
+  // Wrap useSearchParams in Suspense
+  return (
+    <Suspense fallback={null}>
+      <SubscribePageContent router={router} />
+    </Suspense>
+  );
+}
+
+function SubscribePageContent({ router }: { router: ReturnType<typeof useRouter> }) {
+  const searchParams = useSearchParams();
   const inviteId = searchParams.get("invite")
   const [loading, setLoading] = useState<string | null>(null)
   const [selectedPlan, setSelectedPlan] = useState<string>("annual")

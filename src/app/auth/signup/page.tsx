@@ -1,7 +1,7 @@
 "use client"
 export const dynamic = "force-dynamic";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -11,7 +11,16 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 export default function SignUpPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
+  // Wrap useSearchParams in Suspense
+  return (
+    <Suspense fallback={null}>
+      <SignUpPageContent router={router} />
+    </Suspense>
+  );
+}
+
+function SignUpPageContent({ router }: { router: ReturnType<typeof useRouter> }) {
+  const searchParams = useSearchParams();
   const inviteId = searchParams.get("invite")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")

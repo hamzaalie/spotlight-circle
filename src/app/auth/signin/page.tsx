@@ -1,7 +1,7 @@
 "use client"
 export const dynamic = "force-dynamic";
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
@@ -12,7 +12,17 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 export default function SignInPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
+  let searchParams: ReturnType<typeof useSearchParams>;
+  // Wrap useSearchParams in Suspense
+  return (
+    <Suspense fallback={null}>
+      <SignInPageContent router={router} />
+    </Suspense>
+  );
+}
+
+function SignInPageContent({ router }: { router: ReturnType<typeof useRouter> }) {
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
