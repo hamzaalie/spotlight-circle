@@ -262,7 +262,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
                     <CardHeader><CardTitle className="flex items-center gap-2 text-brand-teal-700"><Star className="h-5 w-5" />Services Offered</CardTitle></CardHeader>
                     <CardContent>
                       <div className="flex flex-wrap gap-2">
-                        {profile.services.split(',').map((service: string, idx: number) => (
+                        {Array.isArray(profile.services) && profile.services.map((service: string, idx: number) => (
                           <Badge key={idx} variant="outline" className="bg-brand-teal-50 text-brand-teal-700 border-brand-teal-300">{service.trim()}</Badge>
                         ))}
                       </div>
