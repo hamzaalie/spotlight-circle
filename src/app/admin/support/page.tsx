@@ -28,8 +28,12 @@ export default async function AdminSupportPage() {
       user: {
         select: {
           email: true,
-          firstName: true,
-          lastName: true,
+          profile: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
         },
       },
       messages: {
@@ -220,7 +224,7 @@ export default async function AdminSupportPage() {
                           <User className="h-4 w-4 text-gray-400" />
                           <div className="flex flex-col">
                             <span className="text-sm font-medium text-gray-900">
-                              {ticket.user.firstName} {ticket.user.lastName}
+                              {ticket.user.profile?.firstName} {ticket.user.profile?.lastName}
                             </span>
                             <span className="text-xs text-gray-500">
                               {ticket.user.email}
