@@ -13,7 +13,7 @@ export async function GET() {
     }
 
     const stripe = new Stripe(STRIPE_SECRET_KEY, {
-      apiVersion: '2024-11-20.acacia',
+      apiVersion: '2024-06-20',
     })
 
     console.log('🔧 Setting up Stripe products and prices...')
