@@ -26,7 +26,7 @@ export default async function EmailTemplatesPage() {
 <p>{{senderName}} from {{senderCompany}}</p>
 <p><a href="{{inviteLink}}">Accept Invitation</a></p>`,
       textBody: `Hi {{partnerName}},\n\nI'd love to connect with you on Spotlight Circles to build a mutually beneficial referral partnership.\n\n{{senderName}} from {{senderCompany}}\n\nAccept: {{inviteLink}}`,
-      variables: "partnerName,senderName,senderCompany,inviteLink",
+      variables: ["partnerName","senderName","senderCompany","inviteLink"],
     },
     {
       name: "Referral Notification",
@@ -39,7 +39,7 @@ export default async function EmailTemplatesPage() {
 <p><strong>Notes:</strong> {{clientNotes}}</p>
 <p><a href="{{dashboardLink}}">View in Dashboard</a></p>`,
       textBody: `Hi {{recipientName}},\n\nGreat news! {{senderName}} has sent you a new referral:\n\nClient: {{clientName}}\nEmail: {{clientEmail}}\nPhone: {{clientPhone}}\nNotes: {{clientNotes}}\n\nView: {{dashboardLink}}`,
-      variables: "recipientName,senderName,clientName,clientEmail,clientPhone,clientNotes,dashboardLink",
+      variables: ["recipientName","senderName","clientName","clientEmail","clientPhone","clientNotes","dashboardLink"],
     },
   ]
 
@@ -70,11 +70,20 @@ export default async function EmailTemplatesPage() {
             <CardHeader>
               <CardTitle>{template.name}</CardTitle>
               <CardDescription>
-                Available variables: {template.variables?.split(",").map(v => `{{${v}}}`).join(", ")}
+                Available variables: {Array.isArray(template.variables)
+                  ? (template.variables as string[]).map((v: string) => `{{${v}}}`).join(", ")
+                  : (typeof template.variables === "string" && template.variables
+                      ? (template.variables as string).split(",").map((v: string) => `{{${v}}}`).join(", ")
+                      : "")}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <EmailTemplateEditor template={template} />
+              <EmailTemplateEditor template={{
+                ...template,
+                variables: Array.isArray(template.variables)
+                  ? template.variables.join(",")
+                  : template.variables || ""
+              }} />
             </CardContent>
           </Card>
         ))}
