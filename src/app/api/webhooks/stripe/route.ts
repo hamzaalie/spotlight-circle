@@ -166,7 +166,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Get user details for emails
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { name: true, email: true },
+    select: { email: true },
   })
 
   if (user && user.email) {
