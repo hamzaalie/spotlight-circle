@@ -170,7 +170,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   })
 
   if (user && user.email) {
-    const userName = user.name || 'there'
+    const userName = 'there'
     const amount = session.amount_total || 0
 
     // Send payment confirmation email
