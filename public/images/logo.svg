@@ -1,0 +1,42 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Center circle (gold) -->
+  <circle cx="100" cy="100" r="45" fill="#F5C563"/>
+  
+  <!-- Outer circles (teal) -->
+  <!-- Top -->
+  <circle cx="100" cy="25" r="20" fill="#4A90A4"/>
+  
+  <!-- Top right -->
+  <circle cx="150" cy="50" r="15" fill="#4A90A4"/>
+  
+  <!-- Bottom right -->
+  <circle cx="150" cy="150" r="20" fill="#4A90A4"/>
+  
+  <!-- Bottom -->
+  <circle cx="100" cy="175" r="20" fill="#4A90A4"/>
+  
+  <!-- Bottom left -->
+  <circle cx="50" cy="150" r="20" fill="#4A90A4"/>
+  
+  <!-- Top left -->
+  <circle cx="50" cy="50" r="20" fill="#4A90A4"/>
+  
+  <!-- Connection arcs (teal) -->
+  <!-- Top to top-right -->
+  <path d="M 115 35 Q 125 40 135 45" stroke="#4A90A4" stroke-width="12" fill="none" stroke-linecap="round"/>
+  
+  <!-- Top-right to bottom-right -->
+  <path d="M 158 65 Q 160 100 158 135" stroke="#4A90A4" stroke-width="10" fill="none" stroke-linecap="round"/>
+  
+  <!-- Bottom-right to bottom -->
+  <path d="M 135 160 Q 120 170 105 172" stroke="#4A90A4" stroke-width="12" fill="none" stroke-linecap="round"/>
+  
+  <!-- Bottom to bottom-left -->
+  <path d="M 85 172 Q 70 170 58 162" stroke="#4A90A4" stroke-width="12" fill="none" stroke-linecap="round"/>
+  
+  <!-- Bottom-left to top-left -->
+  <path d="M 42 135 Q 40 100 42 65" stroke="#4A90A4" stroke-width="12" fill="none" stroke-linecap="round"/>
+  
+  <!-- Top-left to top (completing circle) -->
+  <path d="M 65 40 Q 80 30 95 28" stroke="#4A90A4" stroke-width="12" fill="none" stroke-linecap="round"/>
+</svg>

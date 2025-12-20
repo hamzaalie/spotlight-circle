@@ -1,0 +1,472 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PROFESSIONAL
+  ADMIN
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+  TRIALING
+}
+
+enum PartnerStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum ReferralStatus {
+  NEW
+  CONTACTED
+  IN_PROGRESS
+  COMPLETED
+  LOST
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  DELIVERED
+  BOUNCED
+  COMPLAINED
+  FAILED
+}
+
+enum WebhookEventStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  role          Role      @default(PROFESSIONAL)
+  emailVerified DateTime?
+  stripeCustomerId String? @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Profile
+  profile       Profile?
+  
+  // Relationships
+  partnersInitiated Partnership[] @relation("InitiatorPartner")
+  partnersReceived  Partnership[] @relation("ReceiverPartner")
+  referralsSent     Referral[]    @relation("ReferralSender")
+  referralsReceived Referral[]    @relation("ReferralReceiver")
+  
+  // Subscription
+  subscription  Subscription?
+  
+  // Analytics
+  analytics     UserAnalytics?
+  
+  // Support
+  tickets       Ticket[]
+  
+  // Referral requests
+  referralRequestsReceived ReferralRequest[] @relation("ProfileOwnerRequests")
+  partnerReferralRequests  ReferralRequest[] @relation("PartnerRequests")
+
+  @@index([email])
+  @@map("users")
+}
+
+model Profile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Basic Info
+  firstName       String
+  lastName        String
+  photo           String?
+  banner          String?
+  biography       String?
+  generatedBio    String?
+  
+  // Contact
+  phone           String?
+  website         String?
+  
+  // Location
+  city            String
+  state           String?
+  zipCode         String
+  latitude        Float?
+  longitude       Float?
+  
+  // Business Info
+  companyName     String?
+  profession      String
+  services        String[] // Array of services offered
+  clientBaseSize  Int?
+  
+  // Referral Link
+  referralSlug    String   @unique
+  qrCodeUrl       String?
+  
+  // Stats
+  linkClicks      Int      @default(0)
+  
+  // Relations
+  clicks          LinkClick[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([referralSlug])
+  @@index([profession])
+  @@index([zipCode])
+  @@map("profiles")
+}
+
+model Partnership {
+  id              String        @id @default(cuid())
+  
+  // Bidirectional relationship
+  initiatorId     String
+  initiator       User          @relation("InitiatorPartner", fields: [initiatorId], references: [id], onDelete: Cascade)
+  
+  receiverId      String?
+  receiver        User?         @relation("ReceiverPartner", fields: [receiverId], references: [id], onDelete: Cascade)
+  
+  status          PartnerStatus @default(PENDING)
+  
+  // Metadata
+  category        String?       // e.g., "Real Estate", "Legal", "Financial"
+  invitedEmail    String?
+  notes           String?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  acceptedAt      DateTime?
+
+  @@index([initiatorId])
+  @@index([receiverId])
+  @@index([status])
+  @@index([invitedEmail])
+  @@map("partnerships")
+}
+
+model Referral {
+  id              String         @id @default(cuid())
+  
+  // Who sent the referral
+  senderId        String
+  sender          User           @relation("ReferralSender", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  // Who received the referral
+  receiverId      String
+  receiver        User           @relation("ReferralReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  
+  // Client information
+  clientName      String
+  clientEmail     String
+  clientPhone     String?
+  clientNotes     String?
+  
+  // Tracking
+  status          ReferralStatus @default(NEW)
+  
+  // Follow-ups
+  followUps       FollowUp[]
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  completedAt     DateTime?
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("referrals")
+}
+
+model FollowUp {
+  id              String   @id @default(cuid())
+  referralId      String
+  referral        Referral @relation(fields: [referralId], references: [id], onDelete: Cascade)
+  
+  type            String   // "AUTO" | "MANUAL"
+  message         String
+  sentTo          String   // email address
+  sentAt          DateTime @default(now())
+
+  @@index([referralId])
+  @@map("follow_ups")
+}
+
+model Subscription {
+  id                String             @id @default(cuid())
+  userId            String             @unique
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Stripe info
+  stripeCustomerId      String?        @unique
+  stripeSubscriptionId  String?        @unique
+  stripePriceId         String?
+  stripeCurrentPeriodEnd DateTime?
+  
+  status            SubscriptionStatus @default(INCOMPLETE)
+  plan              String?            // "monthly" | "annual"
+  setupFeePaid      Boolean            @default(false)
+  
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+  @@map("subscriptions")
+}
+
+model UserAnalytics {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Partner stats
+  totalPartners         Int      @default(0)
+  activePartners        Int      @default(0)
+  pendingInvitations    Int      @default(0)
+  acceptanceRate        Float    @default(0)
+  
+  // Referral stats
+  totalReferralsGiven   Int      @default(0)
+  totalReferralsReceived Int     @default(0)
+  completedReferrals    Int      @default(0)
+  conversionRate        Float    @default(0)
+  
+  // AI predictions
+  predictedMonthlyReferrals Float @default(0)
+  missingCategories     String[] // Suggested partner gaps
+  
+  lastCalculated        DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("user_analytics")
+}
+
+model EmailTemplate {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  subject         String
+  htmlBody        String
+  textBody        String
+  variables       String[] // Available template variables
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("email_templates")
+}
+
+model PlatformSettings {
+  id              String   @id @default(cuid())
+  key             String   @unique
+  value           String
+  description     String?
+  
+  updatedAt       DateTime @updatedAt
+
+  @@map("platform_settings")
+}
+
+model LinkClick {
+  id              String   @id @default(cuid())
+  profileId       String
+  profile         Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  // Click details
+  ipAddress       String?
+  userAgent       String?
+  referer         String?
+  country         String?
+  city            String?
+  
+  // Conversion tracking
+  converted       Boolean  @default(false)
+  conversionDate  DateTime?
+  
+  createdAt       DateTime @default(now())
+
+  @@index([profileId])
+  @@index([createdAt])
+  @@map("link_clicks")
+}
+
+model EmailLog {
+  id              String      @id @default(cuid())
+  
+  // Email details
+  to              String
+  from            String
+  subject         String
+  htmlBody        String      @db.Text
+  textBody        String?     @db.Text
+  
+  // Status tracking
+  status          EmailStatus @default(PENDING)
+  resendId        String?     // ID from Resend API
+  
+  // Error tracking
+  error           String?     @db.Text
+  
+  // Delivery tracking
+  sentAt          DateTime?
+  deliveredAt     DateTime?
+  openedAt        DateTime?
+  clickedAt       DateTime?
+  bouncedAt       DateTime?
+  complainedAt    DateTime?
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([to])
+  @@index([status])
+  @@index([createdAt])
+  @@index([resendId])
+  @@map("email_logs")
+}
+
+model WebhookEvent {
+  id              String              @id @default(cuid())
+  
+  // Webhook source
+  source          String              // "stripe" | "resend"
+  type            String              // Event type from provider
+  
+  // Data
+  payload         String              @db.Text // JSON payload
+  
+  // Processing
+  status          WebhookEventStatus  @default(PENDING)
+  processedAt     DateTime?
+  error           String?             @db.Text
+  
+  createdAt       DateTime            @default(now())
+
+  @@index([source])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("webhook_events")
+}
+
+model Ticket {
+  id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Ticket details
+  subject         String
+  category        String         // "Technical" | "Billing" | "Feature Request" | "Other"
+  status          TicketStatus   @default(OPEN)
+  priority        TicketPriority @default(NORMAL)
+  
+  // Messages
+  messages        TicketMessage[]
+  
+  // Tracking
+  resolvedAt      DateTime?
+  closedAt        DateTime?
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+  @@map("tickets")
+}
+
+model TicketMessage {
+  id              String   @id @default(cuid())
+  ticketId        String
+  ticket          Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  
+  // Message details
+  message         String   @db.Text
+  isStaff         Boolean  @default(false)
+  authorEmail     String
+  
+  // Attachments (optional)
+  attachments     String[] // URLs to uploaded files
+  
+  createdAt       DateTime @default(now())
+
+  @@index([ticketId])
+  @@index([createdAt])
+  @@map("ticket_messages")
+}
+
+enum ReferralRequestStatus {
+  PENDING
+  FORWARDED
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
+
+model ReferralRequest {
+  id                String                @id @default(cuid())
+  
+  // Who is requesting the referral
+  requesterName     String
+  requesterEmail    String
+  requesterPhone    String?
+  requesterMessage  String?               @db.Text
+  
+  // Which profile owner received this request
+  profileOwnerId    String
+  profileOwner      User                  @relation("ProfileOwnerRequests", fields: [profileOwnerId], references: [id], onDelete: Cascade)
+  
+  // Which partner the requester wants a referral to
+  partnerUserId     String
+  partnerUser       User                  @relation("PartnerRequests", fields: [partnerUserId], references: [id], onDelete: Cascade)
+  
+  // Status tracking
+  status            ReferralRequestStatus @default(PENDING)
+  
+  // If forwarded, track the created referral
+  forwardedAt       DateTime?
+  createdReferralId String?
+  
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  @@index([profileOwnerId])
+  @@index([partnerUserId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("referral_requests")
+}
