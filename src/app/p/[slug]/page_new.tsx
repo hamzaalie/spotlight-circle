@@ -58,9 +58,15 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
 
   const partners = partnerships.map((p) => {
     const isInitiator = p.initiatorId === profile.user.id
+    let partnerProfile = null;
+    if (isInitiator) {
+      partnerProfile = p.receiver?.profile || null;
+    } else {
+      partnerProfile = p.initiator?.profile || null;
+    }
     return {
       ...p,
-      partnerProfile: isInitiator ? p.receiver.profile : p.initiator.profile,
+      partnerProfile,
       category: p.category,
     }
   }).filter(p => p.partnerProfile)
