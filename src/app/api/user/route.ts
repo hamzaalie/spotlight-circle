@@ -17,12 +17,7 @@ export async function GET() {
       where: { id: session.user.id },
       include: {
         profile: true,
-        subscription: {
-          where: {
-            status: { in: ["ACTIVE", "TRIALING"] },
-          },
-          take: 1,
-        },
+        subscription: true,
       },
     })
 
