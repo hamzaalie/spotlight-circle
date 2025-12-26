@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Download, Loader2, FileImage, Palette, Printer } from "lucide-react"
+import { Download, Loader2, FileImage, Palette, Printer, Users } from "lucide-react"
 import html2canvas from "html2canvas"
 import jsPDF from "jspdf"
 
@@ -25,12 +25,21 @@ interface PosterData {
     city: string
     state: string | null
   }
+  partners: Array<{
+    name: string
+    profession: string
+    companyName: string | null
+    photo: string | null
+    city: string
+    state: string | null
+  }>
   customText: string
   qrCode: string | null
   profileUrl: string
 }
 
 const templates = [
+  { id: "network", name: "Professional Network", color: "teal" },
   { id: "modern", name: "Modern Professional", color: "purple" },
   { id: "classic", name: "Classic Elegant", color: "blue" },
   { id: "bold", name: "Bold & Vibrant", color: "orange" },
@@ -40,7 +49,7 @@ const templates = [
 export default function PosterGenerator() {
   const [loading, setLoading] = useState(false)
   const [generating, setGenerating] = useState(false)
-  const [template, setTemplate] = useState("modern")
+  const [template, setTemplate] = useState("network")
   const [customText, setCustomText] = useState("Let's collaborate and grow together!")
   const [includeQR, setIncludeQR] = useState(true)
   const [includePhoto, setIncludePhoto] = useState(true)
@@ -277,6 +286,7 @@ export default function PosterGenerator() {
                 ref={posterRef}
                 className="w-full max-w-2xl aspect-[8.5/11] bg-white border-2 border-gray-200 shadow-lg overflow-hidden"
               >
+                {template === "network" && <NetworkTemplate data={posterData} />}
                 {template === "modern" && <ModernTemplate data={posterData} />}
                 {template === "classic" && <ClassicTemplate data={posterData} />}
                 {template === "bold" && <BoldTemplate data={posterData} />}
@@ -330,6 +340,105 @@ export default function PosterGenerator() {
   )
 }
 
+// Network Template (BrightHaven Style)
+function NetworkTemplate({ data }: { data: PosterData }) {
+
+  // Use person's full name
+  const personName = `${data.profile.firstName} ${data.profile.lastName}`;
+
+  // Show real partners if available, otherwise show placeholders
+  let professionals = [];
+  if (data.partners && data.partners.length > 0) {
+    professionals = data.partners.slice(0, 4);
+  } else {
+    professionals = Array(4).fill(null).map(() => ({
+      name: "Professional Name",
+      profession: "Their Profession",
+      companyName: "Company Name",
+      photo: null,
+      city: null,
+      state: null,
+    }));
+  }
+
+  return (
+    <div className="h-full bg-white px-6 py-8 flex flex-col items-center justify-start">
+      {/* Company Name or Name Header */}
+      <div className="flex flex-col items-center mb-3">
+        <div className="bg-[#0A2540] text-white px-6 py-2 rounded-lg inline-block">
+          <h1 className="text-lg font-bold">{data.profile.companyName || personName}</h1>
+        </div>
+      </div>
+
+      {/* Title Section */}
+      <div className="text-center mb-4">
+        <h2 className="text-2xl font-bold text-[#0A2540] mb-2">
+          Trusted Referral Partners of<br />{data.profile.companyName || personName}
+        </h2>
+        <p className="text-sm text-gray-700">
+          These professionals are part of our extended care network –<br />providers we trust and recommend for our clients and families.
+        </p>
+      </div>
+
+      {/* Professional Cards Grid */}
+      <div className="grid grid-cols-2 gap-4 mb-6 w-full max-w-3xl">
+        {professionals.map((pro, idx) => (
+          <div key={idx} className="bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-row min-h-[140px]">
+            {/* Photo - Left side */}
+            <div className="w-28 h-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+              {pro.photo ? (
+                <img src={pro.photo} alt={pro.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-16 h-16 bg-gray-300 rounded" />
+              )}
+            </div>
+            {/* Info - Right side */}
+            <div className="p-3 flex-1 flex flex-col">
+              <h3 className="font-bold text-gray-900 text-sm mb-0.5 leading-tight">{pro.name}</h3>
+              {pro.companyName && (
+                <p className="text-xs font-medium text-gray-700 mb-1 leading-tight">{pro.companyName}</p>
+              )}
+              <div className="bg-gray-50 px-2 py-1 rounded mb-1">
+                <p className="text-xs text-gray-600 leading-tight">Specialties: {pro.profession}</p>
+              </div>
+              {(pro.city || pro.state) && (
+                <p className="text-xs text-gray-600 leading-tight">
+                  {pro.city && pro.state ? `${pro.city}, ${pro.state}` : pro.city || pro.state}
+                </p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Why We Refer Section */}
+      <div className="border border-gray-300 rounded-lg p-4 mb-6 w-full max-w-3xl text-left">
+        <h2 className="text-lg font-bold text-[#0A2540] mb-2">Why We Refer</h2>
+        <p className="text-sm text-gray-700 leading-relaxed">
+          We only recommend professionals we <span className="font-semibold">personally</span> know and trust.<br />
+          These aren’t paid placements — just great people who do great work.
+        </p>
+      </div>
+
+      {/* QR Code Section */}
+      {data.qrCode && (
+        <div className="w-full max-w-3xl flex items-center justify-between mt-auto">
+          <div className="flex flex-col items-start">
+            <button className="bg-[#D4AF37] text-white px-6 py-2 rounded font-bold text-base mb-1 cursor-default" disabled>
+              Scan the QR code or<br />Enter Website address (URL)
+            </button>
+            <span className="text-xs text-gray-600">{data.profileUrl}</span>
+          </div>
+          <div className="bg-white p-2 border border-gray-300 rounded">
+            <img src={data.qrCode} alt="QR Code" className="w-24 h-24" />
+            <div className="text-xs text-gray-500 text-center mt-1">Scan for Details</div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // Modern Template
 function ModernTemplate({ data }: { data: PosterData }) {
   return (
@@ -346,11 +455,11 @@ function ModernTemplate({ data }: { data: PosterData }) {
           </div>
         )}
         <h1 className="text-5xl font-bold text-white mb-2">
-          {data.profile.firstName} {data.profile.lastName}
+          {data.profile.companyName || `${data.profile.firstName} ${data.profile.lastName}`}
         </h1>
         <p className="text-2xl text-purple-100">{data.profile.profession}</p>
         {data.profile.companyName && (
-          <p className="text-xl text-purple-200 mt-2">{data.profile.companyName}</p>
+          <p className="text-xl text-purple-200 mt-2">{data.profile.firstName} {data.profile.lastName}</p>
         )}
       </div>
 
@@ -393,11 +502,11 @@ function ClassicTemplate({ data }: { data: PosterData }) {
         {/* Header */}
         <div className="text-center border-b-4 border-blue-900 pb-6 mb-6">
           <h1 className="text-5xl font-serif font-bold text-blue-900 mb-2">
-            {data.profile.firstName} {data.profile.lastName}
+            {data.profile.companyName || `${data.profile.firstName} ${data.profile.lastName}`}
           </h1>
           <p className="text-2xl text-blue-700 font-serif">{data.profile.profession}</p>
           {data.profile.companyName && (
-            <p className="text-xl text-gray-700 mt-2 italic">{data.profile.companyName}</p>
+            <p className="text-xl text-gray-700 mt-2 italic">{data.profile.firstName} {data.profile.lastName}</p>
           )}
         </div>
 
@@ -447,13 +556,18 @@ function BoldTemplate({ data }: { data: PosterData }) {
       {/* Top Section - Orange */}
       <div className="bg-gradient-to-r from-orange-500 to-red-500 p-12 text-center">
         <h1 className="text-6xl font-black text-white mb-3 uppercase tracking-wider">
-          {data.profile.firstName}
+          {data.profile.companyName || data.profile.firstName}
         </h1>
-        <h1 className="text-6xl font-black text-white uppercase tracking-wider">
-          {data.profile.lastName}
-        </h1>
+        {!data.profile.companyName && (
+          <h1 className="text-6xl font-black text-white uppercase tracking-wider">
+            {data.profile.lastName}
+          </h1>
+        )}
         <div className="h-2 w-32 bg-white mx-auto my-6"></div>
         <p className="text-3xl text-white font-bold uppercase">{data.profile.profession}</p>
+        {data.profile.companyName && (
+          <p className="text-2xl text-white mt-3">{data.profile.firstName} {data.profile.lastName}</p>
+        )}
       </div>
 
       {/* Middle Section - White */}
@@ -497,16 +611,24 @@ function MinimalTemplate({ data }: { data: PosterData }) {
     <div className="h-full bg-gray-50 p-16 flex flex-col justify-between">
       {/* Header */}
       <div className="text-left">
-        <h1 className="text-6xl font-light text-gray-900 mb-2">
-          {data.profile.firstName}
-        </h1>
-        <h1 className="text-6xl font-light text-gray-900 mb-6">
-          {data.profile.lastName}
-        </h1>
+        {data.profile.companyName ? (
+          <h1 className="text-6xl font-light text-gray-900 mb-6">
+            {data.profile.companyName}
+          </h1>
+        ) : (
+          <>
+            <h1 className="text-6xl font-light text-gray-900 mb-2">
+              {data.profile.firstName}
+            </h1>
+            <h1 className="text-6xl font-light text-gray-900 mb-6">
+              {data.profile.lastName}
+            </h1>
+          </>
+        )}
         <div className="h-1 w-24 bg-gray-900 mb-4"></div>
         <p className="text-2xl text-gray-700 font-light">{data.profile.profession}</p>
         {data.profile.companyName && (
-          <p className="text-xl text-gray-500 mt-2">{data.profile.companyName}</p>
+          <p className="text-xl text-gray-500 mt-2">{data.profile.firstName} {data.profile.lastName}</p>
         )}
       </div>
 

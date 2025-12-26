@@ -26,7 +26,7 @@ export async function GET() {
 
     const setupFeePrice = await stripe.prices.create({
       product: setupFeeProduct.id,
-      unit_amount: 9900, // $99.00
+      unit_amount: 1995, // $19.95
       currency: 'usd',
     })
 
@@ -38,7 +38,7 @@ export async function GET() {
 
     const monthlyPrice = await stripe.prices.create({
       product: monthlyProduct.id,
-      unit_amount: 2900, // $29/month
+      unit_amount: 995, // $9.95/month
       currency: 'usd',
       recurring: { interval: 'month' },
     })
@@ -46,12 +46,12 @@ export async function GET() {
     // 3. Annual Subscription
     const annualProduct = await stripe.products.create({
       name: 'Spotlight Circle - Annual',
-      description: 'Annual membership (save $58/year)',
+      description: 'Annual membership (save $19.45/year)',
     })
 
     const annualPrice = await stripe.prices.create({
       product: annualProduct.id,
-      unit_amount: 29000, // $290/year
+      unit_amount: 9995, // $99.95/year
       currency: 'usd',
       recurring: { interval: 'year' },
     })
@@ -69,17 +69,17 @@ STRIPE_ANNUAL_PRICE_ID="${annualPrice.id}"
         setupFee: {
           productId: setupFeeProduct.id,
           priceId: setupFeePrice.id,
-          amount: '$99.00',
+          amount: '$19.95',
         },
         monthly: {
           productId: monthlyProduct.id,
           priceId: monthlyPrice.id,
-          amount: '$29.00/month',
+          amount: '$9.95/month',
         },
         annual: {
           productId: annualProduct.id,
           priceId: annualPrice.id,
-          amount: '$290.00/year',
+          amount: '$99.95/year',
         },
       },
       envConfig,

@@ -3,13 +3,18 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
+import { AdminHeader } from "@/components/admin/AdminHeader"
+import { StatCard } from "@/components/admin/StatCard"
 import {
   Users,
   Mail,
   Headphones,
-  Database,
-  ArrowLeft,
+  GitPullRequest,
+  TrendingUp,
+  UserPlus,
+  ArrowRight,
+  Activity,
 } from "lucide-react"
 
 export default async function AdminPage() {
@@ -27,8 +32,16 @@ export default async function AdminPage() {
     redirect("/dashboard")
   }
 
-  // Get stats
-  const [totalUsers, totalEmails, openTickets] = await Promise.all([
+  // Get comprehensive stats
+  const [
+    totalUsers,
+    totalEmails,
+    openTickets,
+    totalReferrals,
+    activePartnerships,
+    usersToday,
+    recentActivity,
+  ] = await Promise.all([
     prisma.user.count(),
     prisma.emailLog.count(),
     prisma.ticket.count({
@@ -38,116 +51,243 @@ export default async function AdminPage() {
         },
       },
     }),
+    prisma.referral.count(),
+    prisma.partnership.count({
+      where: {
+        status: "ACCEPTED",
+      },
+    }),
+    prisma.user.count({
+      where: {
+        createdAt: {
+          gte: new Date(new Date().setHours(0, 0, 0, 0)),
+        },
+      },
+    }),
+    prisma.user.findMany({
+      take: 5,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        profile: {
+          select: {
+            firstName: true,
+            lastName: true,
+            profession: true,
+          },
+        },
+      },
+    }),
   ])
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <Link
-            href="/dashboard"
-            className="mb-4 inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
-          </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
-          <p className="mt-2 text-gray-600">
-            System administration and monitoring
-          </p>
-        </div>
+    <div className="p-8">
+      <AdminHeader
+        title="Admin Dashboard"
+        description="Platform overview and quick actions"
+      />
 
-        {/* Stats */}
-        <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Users</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">
-                  {totalUsers}
-                </p>
-              </div>
-              <div className="rounded-full bg-brand-teal-100 p-3">
-                <Users className="h-6 w-6 text-brand-teal-600" />
-              </div>
-            </div>
-          </Card>
+      {/* Key Metrics */}
+      <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          title="Total Users"
+          value={totalUsers}
+          icon={Users}
+          description={`+${usersToday} today`}
+          colorClass="bg-brand-teal-100 text-brand-teal-600"
+        />
+        <StatCard
+          title="Total Referrals"
+          value={totalReferrals}
+          icon={GitPullRequest}
+          colorClass="bg-purple-100 text-purple-600"
+        />
+        <StatCard
+          title="Active Partnerships"
+          value={activePartnerships}
+          icon={UserPlus}
+          colorClass="bg-brand-gold-100 text-brand-gold-600"
+        />
+        <StatCard
+          title="Open Tickets"
+          value={openTickets}
+          icon={Headphones}
+          colorClass="bg-orange-100 text-orange-600"
+        />
+      </div>
 
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Emails Sent
-                </p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">
-                  {totalEmails}
-                </p>
-              </div>
-              <div className="rounded-full bg-brand-teal-100 p-3">
-                <Mail className="h-6 w-6 text-brand-teal-600" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Open Tickets
-                </p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">
-                  {openTickets}
-                </p>
-              </div>
-              <div className="rounded-full bg-orange-100 p-3">
-                <Headphones className="h-6 w-6 text-orange-600" />
-              </div>
-            </div>
-          </Card>
-        </div>
-
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <Card className="p-6">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="rounded-lg bg-orange-100 p-3">
-                <Headphones className="h-6 w-6 text-orange-600" />
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Support Tickets
-                </h2>
-                <p className="text-sm text-gray-600">
-                  View and respond to customer support requests
-                </p>
-              </div>
-            </div>
-            <Link href="/admin/support">
-              <Button className="w-full">Manage Tickets</Button>
+        <div className="lg:col-span-2 space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
+          
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Link href="/admin/users">
+              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-brand-teal-100 p-3">
+                      <Users className="h-6 w-6 text-brand-teal-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">
+                        Manage Users
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        View and edit user accounts
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-brand-teal-600 transition-colors" />
+                </div>
+              </Card>
             </Link>
-          </Card>
 
-          <Card className="p-6">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="rounded-lg bg-brand-teal-100 p-3">
-                <Mail className="h-6 w-6 text-brand-teal-600" />
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Email Logs
-                </h2>
-                <p className="text-sm text-gray-600">
-                  Monitor email delivery and status
-                </p>
-              </div>
+            <Link href="/admin/analytics">
+              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-purple-100 p-3">
+                      <TrendingUp className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">
+                        Analytics
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Platform performance metrics
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                </div>
+              </Card>
+            </Link>
+
+            <Link href="/admin/referrals">
+              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-brand-gold-100 p-3">
+                      <GitPullRequest className="h-6 w-6 text-brand-gold-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">
+                        Referrals
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Monitor all platform referrals
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-brand-gold-600 transition-colors" />
+                </div>
+              </Card>
+            </Link>
+
+            <Link href="/admin/support">
+              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-orange-100 p-3">
+                      <Headphones className="h-6 w-6 text-orange-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">
+                        Support
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Respond to support tickets
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-orange-600 transition-colors" />
+                </div>
+              </Card>
+            </Link>
+
+            <Link href="/admin/settings">
+              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-gray-100 p-3">
+                      <Mail className="h-6 w-6 text-gray-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">
+                        Settings
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Configure platform settings
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                </div>
+              </Card>
+            </Link>
+
+            <Link href="/dashboard">
+              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-green-100 p-3">
+                      <Activity className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">
+                        Exit Admin
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Return to main dashboard
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-green-600 transition-colors" />
+                </div>
+              </Card>
+            </Link>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <Card>
+          <CardContent className="p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Recent Users
+            </h2>
+            <div className="space-y-4">
+              {recentActivity.map((activityUser) => (
+                <div
+                  key={activityUser.id}
+                  className="flex items-start justify-between"
+                >
+                  <div>
+                    <p className="font-medium text-gray-900">
+                      {activityUser.profile
+                        ? `${activityUser.profile.firstName} ${activityUser.profile.lastName}`
+                        : activityUser.email}
+                    </p>
+                    {activityUser.profile?.profession && (
+                      <p className="text-sm text-gray-500">
+                        {activityUser.profile.profession}
+                      </p>
+                    )}
+                    <p className="text-xs text-gray-400">
+                      {new Date(activityUser.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <Link href="/dashboard/email-logs">
-              <Button className="w-full" variant="outline">
-                View Email Logs
+            <Link href="/admin/users">
+              <Button variant="outline" className="w-full mt-4">
+                View All Users
               </Button>
             </Link>
-          </Card>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

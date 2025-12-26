@@ -9,7 +9,7 @@ const plans = [
   {
     id: "monthly",
     name: "Monthly Plan",
-    price: "$29",
+    price: "$9.95",
     period: "/month",
     description: "Perfect for getting started",
     features: [
@@ -25,9 +25,9 @@ const plans = [
   {
     id: "annual",
     name: "Annual Plan",
-    price: "$290",
+    price: "$99.95",
     period: "/year",
-    badge: "Save $58",
+    badge: "Save $19.45",
     description: "Best value - 2 months free!",
     features: [
       "All Monthly features",
@@ -124,9 +124,9 @@ export default function SubscriptionPlans({
                 <span className="text-2xl">💎</span>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-purple-900 mb-1">One-Time Setup Fee: $99</h3>
+                <h3 className="font-semibold text-purple-900 mb-1">One-Time Setup Fee: $19.95</h3>
                 <p className="text-sm text-purple-700">
-                  New members pay a one-time $99 setup fee to join the network. This ensures quality 
+                  New members pay a one-time $19.95 setup fee to join the network. This ensures quality 
                   professionals and helps maintain our platform.
                 </p>
               </div>

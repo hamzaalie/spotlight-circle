@@ -18,8 +18,8 @@ export const STRIPE_PRODUCTS = {
 
 // Pricing configuration
 export const PRICING = {
-  setupFee: 9900, // $99.00 in cents
-  monthly: 2900, // $29.00 in cents
-  annual: 29000, // $290.00 in cents ($24.17/month)
+  setupFee: 1995, // $19.95 in cents
+  monthly: 995, // $9.95 in cents
+  annual: 9995, // $99.95 in cents ($8.33/month)
 }
 

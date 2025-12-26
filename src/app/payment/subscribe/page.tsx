@@ -12,9 +12,9 @@ const PLANS = [
   {
     id: "monthly",
     name: "Monthly",
-    price: "$29",
+    price: "$9.95",
     period: "/month",
-    setupFee: "$99",
+    setupFee: "$19.95",
     features: [
       "Unlimited referral partners",
       "AI-powered partner recommendations",
@@ -28,10 +28,10 @@ const PLANS = [
   {
     id: "annual",
     name: "Annual",
-    price: "$290",
+    price: "$99.95",
     period: "/year",
-    setupFee: "$99",
-    savings: "Save $58/year",
+    setupFee: "$19.95",
+    savings: "Save $19.45/year",
     features: [
       "Everything in Monthly",
       "2 months free",
@@ -85,11 +85,11 @@ function SubscribePageContent({ router }: { router: ReturnType<typeof useRouter>
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-teal-500 via-brand-teal-400 to-brand-gold-300 flex items-center justify-center p-4">
-      <div className="w-full max-w-5xl space-y-8">
-        <div className="text-center text-white space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold drop-shadow-lg">Choose Your Plan</h1>
-          <p className="text-xl text-brand-teal-50">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-5xl space-y-8 py-8">
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900">Choose Your Plan</h1>
+          <p className="text-xl text-gray-600">
             Complete your setup to start building your referral network
           </p>
         </div>
@@ -98,15 +98,15 @@ function SubscribePageContent({ router }: { router: ReturnType<typeof useRouter>
           {PLANS.map((plan) => (
             <Card
               key={plan.id}
-              className={`relative transition-all hover:shadow-2xl ${
+              className={`relative transition-all hover:shadow-xl ${
                 plan.popular
-                  ? "border-2 border-brand-gold-400 shadow-2xl scale-105 bg-gradient-to-b from-white to-brand-teal-50"
-                  : "border-2 border-gray-200 bg-white hover:border-brand-teal-300"
+                  ? "border-2 border-brand-teal-500 shadow-lg bg-white"
+                  : "border border-gray-200 bg-white hover:border-brand-teal-300 hover:shadow-lg"
               }`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-brand-gold-400 text-white px-6 py-2 text-sm font-bold shadow-lg">
+                  <Badge className="bg-brand-gold-500 text-white px-6 py-2 text-sm font-bold shadow-lg">
                     ⭐ BEST VALUE
                   </Badge>
                 </div>
@@ -147,8 +147,8 @@ function SubscribePageContent({ router }: { router: ReturnType<typeof useRouter>
                   disabled={loading !== null}
                   className={`w-full ${
                     plan.popular
-                      ? "bg-brand-gold-400 hover:bg-brand-gold-500"
-                      : "bg-gray-900 hover:bg-gray-800"
+                      ? "bg-brand-gold-500 hover:bg-brand-gold-600 text-white"
+                      : "bg-brand-teal-600 hover:bg-brand-teal-700 text-white"
                   }`}
                   size="lg"
                 >
@@ -172,8 +172,8 @@ function SubscribePageContent({ router }: { router: ReturnType<typeof useRouter>
           ))}
         </div>
 
-        <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg py-4 px-6">
-          <p className="text-white text-sm font-medium">
+        <div className="text-center bg-white border border-gray-200 rounded-lg py-4 px-6 shadow-sm">
+          <p className="text-gray-600 text-sm font-medium">
             🔒 Secure checkout powered by Stripe
           </p>
         </div>

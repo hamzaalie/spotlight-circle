@@ -41,8 +41,13 @@ export function SharePartnersActions({ referralSlug }: SharePartnersActionsProps
 
   return (
     <>
-      {/* Integration Options */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Marketing Title */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">Marketing Tips </h2>
+      </div>
+
+      {/* Integration Options - 2 per row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Add a Link (Recommended) */}
         <Card className="border-2 border-brand-gold-300 relative">
           <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-gold-400 hover:bg-brand-gold-500 text-white">
@@ -154,6 +159,33 @@ export function SharePartnersActions({ referralSlug }: SharePartnersActionsProps
               onClick={() => window.location.href = '/dashboard/marketing'}
             >
               Generate QR Code
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Create a Poster */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Create a Poster</CardTitle>
+            <p className="text-sm text-gray-600">
+              For your waiting room lobby.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-gray-700">
+              A poster is a great way to provide value to your clients while they wait.
+            </p>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div className="h-32 w-full bg-white border-2 border-gray-300 rounded flex items-center justify-center">
+                <p className="text-gray-400 text-sm">Poster Preview</p>
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              className="w-full border-brand-teal-400 text-brand-teal-700 hover:bg-brand-teal-50"
+              onClick={() => window.location.href = '/dashboard/poster'}
+            >
+              Click Here to Create
             </Button>
           </CardContent>
         </Card>

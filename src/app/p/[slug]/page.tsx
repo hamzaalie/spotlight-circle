@@ -5,11 +5,21 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Briefcase, Building2, Globe, Users, Send, CheckCircle2, Star, Award, TrendingUp, Mail } from "lucide-react"
+import { MapPin, Briefcase, Building2, Globe, Users, Send, CheckCircle2, Star, Award, TrendingUp, Mail, Phone, ShieldCheck } from "lucide-react"
 import Image from "next/image"
 import { headers } from "next/headers"
 import { auth } from "@/auth"
 import { RequestReferralButton } from "@/components/public/RequestReferralButton"
+import dynamic from "next/dynamic"
+
+const ProfileMap = dynamic(() => import("@/components/public/ProfileMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-full w-full bg-gray-100 flex items-center justify-center">
+      <MapPin className="h-12 w-12 text-gray-400" />
+    </div>
+  ),
+})
 
 interface PublicProfilePageProps {
   params: {
@@ -143,51 +153,97 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Card className="overflow-hidden shadow-2xl mb-8">
-          <div className="relative h-48 md:h-64 bg-brand-gold-400">
-            {profile.banner && <img src={profile.banner} alt="Banner" className="w-full h-full object-cover" />}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-          </div>
           
-          <CardContent className="relative px-6 md:px-8 pb-8 pt-16">
-            <div className="flex flex-col lg:flex-row items-start lg:items-end gap-6 -mt-12 mb-8">
-              <Avatar className="h-32 w-32 md:h-40 md:w-40 border-4 border-white shadow-2xl ring-4 ring-brand-teal-100">
-                <AvatarImage src={profile.photo || undefined} alt={`${profile.firstName} ${profile.lastName}`} />
-                <AvatarFallback className="text-4xl md:text-5xl bg-gradient-to-br from-brand-teal-500 to-brand-gold-400 text-white font-bold">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              
-              <div className="flex-1">
-                <div className="flex items-start gap-3 mb-2">
-                  <div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-1">
-                      {profile.firstName} {profile.lastName}
-                    </h1>
-                    <p className="text-xl text-brand-teal-600 font-medium">{profile.profession}</p>
+          <CardContent className="relative px-6 md:px-8 pb-8 pt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column - Avatar and Info */}
+              <div className="lg:col-span-2">
+                <div className="flex items-start gap-6 mb-6">
+                  <div className="h-52 w-52 md:h-60 md:w-60 border-4 border-white shadow-xl rounded-lg overflow-hidden flex-shrink-0">
+                    {profile.photo ? (
+                      <img 
+                        src={profile.photo} 
+                        alt={`${profile.firstName} ${profile.lastName}`}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center text-6xl bg-gradient-to-br from-brand-teal-500 to-brand-gold-400 text-white font-bold">
+                        {initials}
+                      </div>
+                    )}
                   </div>
-                  {profile.linkClicks > 100 && (
-                    <Badge className="bg-brand-gold-400 text-white"><Award className="h-3 w-3 mr-1" />Top Performer</Badge>
-                  )}
+                  
+                  <div className="flex-1 pt-4">
+                    {profile.companyName && (
+                      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                        {profile.companyName}
+                      </h1>
+                    )}
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-1">
+                      {profile.firstName} {profile.lastName}
+                    </h2>
+                    {profile.profession && (
+                      <p className="text-lg text-gray-600 font-medium mb-3">{profile.profession}</p>
+                    )}
+                    
+                    {/* Badges */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {profile.profession && (
+                        <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border border-blue-300">
+                          <Briefcase className="h-3 w-3 mr-1" />
+                          {profile.profession}
+                        </Badge>
+                      )}
+                      <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border border-blue-300">
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                        Trusted
+                      </Badge>
+                      <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border border-blue-300">
+                        <ShieldCheck className="h-3 w-3 mr-1" />
+                        Verified
+                      </Badge>
+                    </div>
+                    
+                    {/* Rating - removed */}
+                    
+                    
+                    {/* Contact Info */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <Phone className="h-4 w-4 text-brand-teal-600" />
+                        <span className="font-medium">{profile.phone || "null"}</span>
+                      </div>
+                      {profile.user?.email && (
+                        <div className="flex items-center gap-2 text-gray-700">
+                          <Mail className="h-4 w-4 text-brand-teal-600" />
+                          <span className="font-medium">{profile.user.email}</span>
+                        </div>
+                      )}
+                      {location && (
+                        <div className="flex items-center gap-2 text-gray-700">
+                          <MapPin className="h-4 w-4 text-brand-teal-600" />
+                          <span>{location}</span>
+                        </div>
+                      )}
+                      {profile.website && (
+                        <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-brand-teal-600 hover:text-brand-teal-700 font-medium">
+                          <Globe className="h-4 w-4" /><span>Visit Website</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="flex flex-wrap gap-4 mt-4">
-                  {profile.companyName && (
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <Building2 className="h-4 w-4 text-brand-teal-500" />
-                      <span className="font-medium">{profile.companyName}</span>
-                    </div>
-                  )}
-                  {location && (
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <MapPin className="h-4 w-4 text-brand-teal-500" />
-                      <span>{location}</span>
-                    </div>
-                  )}
-                  {profile.website && (
-                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-brand-teal-600 hover:text-brand-teal-700 font-medium">
-                      <Globe className="h-4 w-4" /><span>Visit Website</span>
-                    </a>
-                  )}
+              </div>
+              
+              {/* Right Column - Map */}
+              <div className="lg:col-span-1">
+                <div className="bg-gray-100 rounded-lg overflow-hidden h-64 lg:h-full min-h-[250px] relative">
+                  <ProfileMap
+                    latitude={profile.latitude}
+                    longitude={profile.longitude}
+                    location={location}
+                    name={`${profile.firstName} ${profile.lastName}`}
+                  />
                 </div>
               </div>
             </div>
@@ -225,12 +281,19 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
                       <Card key={partner.id} className="hover:shadow-lg transition-shadow">
                         <CardContent className="p-6">
                           <div className="flex items-start gap-4 mb-4">
-                            <Avatar className="h-28 w-28 border-2 border-gray-200">
-                              <AvatarImage src={p.photo || undefined} alt={p.firstName} />
-                              <AvatarFallback className="bg-gradient-to-br from-brand-teal-400 to-brand-gold-300 text-white text-3xl font-bold">
-                                {`${p.firstName[0]}${p.lastName[0]}`.toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
+                            <div className="h-28 w-28 border-2 border-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                              {p.photo ? (
+                                <img 
+                                  src={p.photo} 
+                                  alt={`${p.firstName} ${p.lastName}`}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-brand-teal-400 to-brand-gold-300 text-white text-3xl font-bold">
+                                  {`${p.firstName[0]}${p.lastName[0]}`.toUpperCase()}
+                                </div>
+                              )}
+                            </div>
                             <div className="flex-1 min-w-0">
                               <h4 className="font-extrabold text-gray-900 text-xl mb-1">{p.firstName} {p.lastName}</h4>
                               <p className="text-sm text-gray-700 font-semibold mb-1">{p.profession}</p>

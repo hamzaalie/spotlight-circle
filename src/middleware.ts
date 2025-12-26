@@ -39,13 +39,20 @@ export default auth(async (req) => {
     return NextResponse.redirect(signInUrl)
   }
 
-  // Protect admin routes
-  if (pathname.startsWith('/admin') && req.auth?.user?.role !== 'ADMIN') {
-    return NextResponse.redirect(new URL('/dashboard', req.url))
+  // Protect admin routes - block access if not logged in or not ADMIN role
+  if (pathname.startsWith('/admin')) {
+    if (!isLoggedIn || req.auth?.user?.role !== 'ADMIN') {
+      return NextResponse.redirect(new URL('/dashboard', req.url))
+    }
   }
 
   // Redirect authenticated users away from auth pages
   if (isLoggedIn && pathname.startsWith('/auth/')) {
+    // Redirect admins directly to admin panel
+    if (req.auth?.user?.role === 'ADMIN') {
+      return NextResponse.redirect(new URL('/admin', req.url))
+    }
+    
     const onboardingUrl = new URL('/onboarding', req.url)
     // Preserve invite parameter if present in the auth page URL
     const inviteParam = req.nextUrl.searchParams.get('invite')

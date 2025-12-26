@@ -11,21 +11,34 @@ const path = require('path');
 
 // Read .env file manually
 const envPath = path.join(__dirname, '..', '.env');
+console.log('Reading .env from:', envPath);
 const envContent = fs.readFileSync(envPath, 'utf8');
-const envLines = envContent.split('\n');
+const envLines = envContent.split(/\r?\n/); // Handle both Unix and Windows line endings
 const env = {};
 
-envLines.forEach(line => {
-  const match = line.match(/^([^#=]+)=(.*)$/);
+envLines.forEach((line, index) => {
+  // Skip empty lines and comments
+  const trimmedLine = line.trim();
+  if (!trimmedLine || trimmedLine.startsWith('#')) {
+    return;
+  }
+  
+  const match = trimmedLine.match(/^([^=]+)=(.*)$/);
   if (match) {
     const key = match[1].trim();
-    const value = match[2].trim().replace(/^["']|["']$/g, '');
+    let value = match[2].trim();
+    // Remove surrounding quotes if present
+    value = value.replace(/^["'](.*)["']$/, '$1');
     env[key] = value;
   }
 });
 
+console.log('Found env keys:', Object.keys(env));
+console.log('STRIPE_SECRET_KEY exists:', !!env.STRIPE_SECRET_KEY);
+
 if (!env.STRIPE_SECRET_KEY) {
   console.error('❌ STRIPE_SECRET_KEY not found in .env file');
+  console.error('Make sure your .env file has: STRIPE_SECRET_KEY=sk_test_...');
   process.exit(1);
 }
 
@@ -44,7 +57,7 @@ async function setupStripeProducts() {
 
     const setupFeePrice = await stripe.prices.create({
       product: setupFeeProduct.id,
-      unit_amount: 9900, // $99.00
+      unit_amount: 1995, // $19.95
       currency: 'usd',
     });
 
@@ -59,7 +72,7 @@ async function setupStripeProducts() {
 
     const monthlyPrice = await stripe.prices.create({
       product: monthlyProduct.id,
-      unit_amount: 2900, // $29.00
+      unit_amount: 995, // $9.95
       currency: 'usd',
       recurring: {
         interval: 'month',
@@ -72,12 +85,12 @@ async function setupStripeProducts() {
     console.log('Creating Annual Subscription product...');
     const annualProduct = await stripe.products.create({
       name: 'Spotlight Circle - Annual',
-      description: 'Annual membership to Spotlight Circle referral network (save $58/year)',
+      description: 'Annual membership to Spotlight Circle referral network (save $19.45/year)',
     });
 
     const annualPrice = await stripe.prices.create({
       product: annualProduct.id,
-      unit_amount: 29000, // $290.00
+      unit_amount: 9995, // $99.95
       currency: 'usd',
       recurring: {
         interval: 'year',

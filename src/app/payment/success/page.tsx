@@ -142,7 +142,7 @@ function SuccessContent() {
                 </ul>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <Button 
                   onClick={handleGoToDashboard}
                   className="w-full bg-brand-gold-400 hover:bg-brand-gold-500"

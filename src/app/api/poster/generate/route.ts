@@ -33,6 +33,44 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Get user's accepted partners (from Partnership model)
+    const partnerships = await prisma.partnership.findMany({
+      where: {
+        status: "ACCEPTED",
+        OR: [
+          { initiatorId: session.user.id },
+          { receiverId: session.user.id },
+        ],
+      },
+      include: {
+        initiator: { include: { profile: true } },
+        receiver: { include: { profile: true } },
+      },
+      orderBy: { acceptedAt: "desc" },
+      take: 4,
+    });
+
+    // Get the other party's profile for each partnership
+    const partners = partnerships
+      .map(part => {
+        let partnerProfile = null;
+        if (part.initiatorId === session.user.id && part.receiver && part.receiver.profile) {
+          partnerProfile = part.receiver.profile;
+        } else if (part.receiverId === session.user.id && part.initiator && part.initiator.profile) {
+          partnerProfile = part.initiator.profile;
+        }
+        return partnerProfile;
+      })
+      .filter((profile): profile is NonNullable<typeof profile> => !!profile)
+      .map(profile => ({
+        name: `${profile.firstName} ${profile.lastName}`,
+        profession: profile.profession,
+        companyName: profile.companyName,
+        photo: includePhoto ? profile.photo : null,
+        city: profile.city,
+        state: profile.state,
+      }));
+
     // Generate QR code if requested
     let qrCodeDataUrl = null
     if (includeQR) {
@@ -64,6 +102,7 @@ export async function POST(req: NextRequest) {
           city: profile.city,
           state: profile.state,
         },
+        partners,
         customText: customText || "",
         qrCode: qrCodeDataUrl,
         profileUrl: `${process.env.NEXTAUTH_URL}/p/${profile.referralSlug}`,

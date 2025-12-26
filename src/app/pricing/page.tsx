@@ -52,10 +52,10 @@ export default function PricingPage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-2xl font-bold text-brand-teal-900 mb-2">
-                  One-Time Setup Fee: $99
+                  One-Time Setup Fee: $19.95
                 </h3>
                 <p className="text-brand-teal-700">
-                  New members pay a one-time $99 setup fee to join our exclusive network. 
+                  New members pay a one-time $19.95 setup fee to join our exclusive network. 
                   This ensures we maintain a community of serious, committed professionals 
                   who are invested in building quality partnerships.
                 </p>
@@ -72,7 +72,7 @@ export default function PricingPage() {
               <CardTitle className="text-2xl">Monthly Plan</CardTitle>
               <CardDescription>Perfect for getting started</CardDescription>
               <div className="mt-4">
-                <span className="text-5xl font-bold text-gray-900">$29</span>
+                <span className="text-5xl font-bold text-gray-900">$9.95</span>
                 <span className="text-gray-600 ml-2">/month</span>
               </div>
             </CardHeader>
@@ -110,18 +110,18 @@ export default function PricingPage() {
           <Card className="border-2 border-brand-teal-500 relative hover:shadow-xl transition-shadow">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2">
               <span className="bg-brand-teal-500 text-white text-sm font-semibold px-4 py-1.5 rounded-full">
-                BEST VALUE - Save $58
+                BEST VALUE - Save $19.45
               </span>
             </div>
             <CardHeader>
               <CardTitle className="text-2xl">Annual Plan</CardTitle>
               <CardDescription>2 months free!</CardDescription>
               <div className="mt-4">
-                <span className="text-5xl font-bold text-brand-teal-600">$290</span>
+                <span className="text-5xl font-bold text-brand-teal-600">$99.95</span>
                 <span className="text-gray-600 ml-2">/year</span>
               </div>
               <p className="text-sm text-gray-600 mt-2">
-                Just $24.17/month - Save $58 annually
+                Just $8.33/month - Save $19.45 annually
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -145,7 +145,7 @@ export default function PricingPage() {
 
               <Link href="/auth/signup">
                 <Button className="w-full bg-brand-gold-400 hover:bg-brand-gold-500 text-lg py-6 mt-8">
-                  Get Started - Save $58
+                  Get Started - Save $19.45
                 </Button>
               </Link>
               <p className="text-xs text-center text-gray-500 mt-3">
@@ -212,7 +212,7 @@ export default function PricingPage() {
                 Why is there a setup fee?
               </h3>
               <p className="text-gray-600">
-                The $99 setup fee ensures we attract serious professionals who are committed 
+                The $19.95 setup fee ensures we attract serious professionals who are committed 
                 to building quality partnerships. This investment helps maintain a high-quality 
                 network and covers onboarding, verification, and platform access.
               </p>

@@ -278,12 +278,19 @@ export default function DirectorySearch({
                 <CardContent className="pt-6">
                   {/* Avatar */}
                   <div className="flex flex-col items-center text-center mb-4">
-                    <Avatar className="h-24 w-24 mb-3">
-                      <AvatarImage src={prof.photo || undefined} alt={`${prof.firstName} ${prof.lastName}`} />
-                      <AvatarFallback className="text-2xl bg-brand-gold-400 text-white">
-                        {prof.firstName[0]}{prof.lastName[0]}
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className="h-24 w-24 mb-3 rounded-lg overflow-hidden border-2 border-gray-200">
+                      {prof.photo ? (
+                        <img 
+                          src={prof.photo} 
+                          alt={`${prof.firstName} ${prof.lastName}`}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center text-2xl bg-brand-gold-400 text-white font-bold">
+                          {prof.firstName[0]}{prof.lastName[0]}
+                        </div>
+                      )}
+                    </div>
                     <h3 className="font-bold text-lg text-gray-900">
                       {prof.firstName} {prof.lastName}
                     </h3>

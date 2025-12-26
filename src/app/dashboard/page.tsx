@@ -5,6 +5,7 @@ import { Users, Link2, TrendingUp, MailCheck, Check, Lightbulb, Star, Monitor, Q
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { SharePartnersActions } from "@/components/dashboard/SharePartnersActions"
+import { InviteProfessionalsList } from "@/components/dashboard/InviteProfessionalsList"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -53,6 +54,74 @@ export default async function DashboardPage() {
     take: 5,
   })
 
+  // Fetch active partners
+  const activePartnerships = await prisma.partnership.findMany({
+    where: {
+      status: "ACCEPTED",
+      OR: [
+        { initiatorId: session.user.id },
+        { receiverId: session.user.id },
+      ],
+    },
+    include: {
+      initiator: { include: { profile: true } },
+      receiver: { include: { profile: true } },
+    },
+    orderBy: { acceptedAt: 'desc' },
+    take: 3,
+  })
+
+  // Get all partnerships to determine status
+  const allPartnerships = await prisma.partnership.findMany({
+    where: {
+      OR: [
+        { initiatorId: session.user.id },
+        { receiverId: session.user.id },
+      ],
+    },
+    select: {
+      initiatorId: true,
+      receiverId: true,
+      status: true,
+    },
+  })
+
+  // Only exclude accepted partners, keep pending and declined for display
+  const acceptedPartnerIds = allPartnerships
+    .filter(p => p.status === 'ACCEPTED')
+    .map(p => p.initiatorId === session.user.id ? p.receiverId : p.initiatorId)
+    .filter((id): id is string => !!id)
+
+  const suggestedProfessionals = await prisma.profile.findMany({
+    where: {
+      userId: {
+        not: session.user.id,
+        notIn: acceptedPartnerIds,
+      },
+    },
+    include: {
+      user: {
+        select: { id: true },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 4,
+  })
+
+  // Add partnership status to each professional
+  const professionalsWithStatus = suggestedProfessionals.map(prof => {
+    const partnership = allPartnerships.find(p => 
+      (p.initiatorId === session.user.id && p.receiverId === prof.userId) ||
+      (p.receiverId === session.user.id && p.initiatorId === prof.userId)
+    )
+    return {
+      ...prof,
+      // Ensure `user` object exists for components expecting it
+      user: prof.user ?? { id: prof.userId },
+      partnershipStatus: partnership?.status || null,
+    }
+  })
+
   const stats = [
     {
       name: "Total Partners",
@@ -95,189 +164,176 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.name}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                {stat.name}
-              </CardTitle>
-              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                <stat.icon className={`h-5 w-5 ${stat.color}`} />
+      {/* Invite + Analytics Two Column Responsive Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left: Invite box (mobile first) */}
+        <div className="order-1">
+          <Card className="bg-gradient-to-br from-brand-teal-50 to-blue-50">
+            <CardContent className="p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Invite a Trusted Professional</h2>
+              <p className="text-gray-700 mb-4">
+                Know a great CPA, attorney, realtor, or contractor? Invite them to your Circle!
+              </p>
+              <div className="flex gap-3">
+                <input
+                  type="email"
+                  placeholder="email@example.com"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-teal-500 focus:border-transparent"
+                />
+                <Button className="bg-brand-teal-600 hover:bg-brand-teal-700" asChild>
+                  <a href="/dashboard/partners/invite">Send Invite</a>
+                </Button>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stat.value}</div>
+              <a href="/dashboard/partners/invite" className="inline-block mt-3 text-sm text-brand-teal-600 hover:text-brand-teal-700 font-medium">
+                See Your Invites →
+              </a>
             </CardContent>
           </Card>
-        ))}
-      </div>
-
-      {/* Share Your Trusted Partners Section */}
-      <div className="space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Share Your Trusted Partners with Your Clients
-          </h2>
-          <p className="text-gray-600">
-            This is how referrals multiply. When clients can access your trusted professionals, your Circle begins working for you—automatically.
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Why This Step Matters */}
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-brand-teal-700">
-                <Lightbulb className="h-5 w-5" />
-                Why this step matters
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-brand-teal-600 flex-shrink-0 mt-0.5" />
-                <p className="text-gray-700">Clients often ask: "Do you know someone good for...?"</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-brand-teal-600 flex-shrink-0 mt-0.5" />
-                <p className="text-gray-700">This page answers that question instantly</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-brand-teal-600 flex-shrink-0 mt-0.5" />
-                <p className="text-gray-700">Members who share their Circle receive up to 3× more referrals*</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-brand-teal-600 flex-shrink-0 mt-0.5" />
-                <p className="text-gray-700 font-semibold">No ads <Check className="h-4 w-4 inline ml-1" /> No selling</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-brand-teal-600 flex-shrink-0 mt-0.5" />
-                <p className="text-gray-700">Just trusted introductions</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Preview */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-center text-brand-teal-700">
-                Professionals We Trust
-              </CardTitle>
-              <p className="text-sm text-gray-600 text-center">Recommended for You</p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-3">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="border border-gray-200 rounded-lg p-3 bg-white">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-brand-teal-300 to-brand-gold-200" />
-                      <div className="flex-1">
-                        <div className="h-3 bg-gray-300 rounded w-3/4 mb-1" />
-                        <div className="h-2 bg-gray-200 rounded w-1/2" />
-                      </div>
-                      <Check className="h-4 w-4 text-brand-teal-600" />
-                    </div>
-                    <Button size="sm" className="w-full bg-brand-teal-600 hover:bg-brand-teal-700 text-white text-xs">
-                      Request an Introduction
-                    </Button>
+        {/* Right: Analytics cards arranged 2x2 */}
+        <div className="order-2">
+          <div className="grid grid-cols-2 gap-6">
+            {stats.map((stat) => (
+              <Card key={stat.name}>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-600">
+                    {stat.name}
+                  </CardTitle>
+                  <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                    <stat.icon className={`h-5 w-5 ${stat.color}`} />
                   </div>
-                ))}
-              </div>
-              <p className="text-xs text-gray-500 text-center mt-4">
-                This is exactly what your clients will see on your website.
-              </p>
-            </CardContent>
-          </Card>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{stat.value}</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
-
-        {/* Integration Options - Client Component */}
-        {profile?.referralSlug && <SharePartnersActions referralSlug={profile.referralSlug} />}
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* Two Column Layout: Active Partners + Invite Professionals (swapped) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Your Partner Referrals (now left) */}
         <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+          <CardHeader className="bg-gray-50 border-b">
+            <CardTitle>Your Active Partners</CardTitle>
+            <a href="/dashboard/partners" className="text-sm text-brand-teal-600 hover:text-brand-teal-700 font-medium">
+              View All Partners →
+            </a>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <a
-              href="/dashboard/partners/invite"
-              className="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <h3 className="font-semibold text-gray-900">Invite a Partner</h3>
-              <p className="text-sm text-gray-600">
-                Grow your network by inviting trusted professionals
-              </p>
-            </a>
-            <a
-              href={`/p/${profile?.referralSlug}`}
-              target="_blank"
-              className="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <h3 className="font-semibold text-gray-900">View Your Referral Page</h3>
-              <p className="text-sm text-gray-600">
-                See what clients see when they visit your link
-              </p>
-            </a>
-            <a
-              href="/dashboard/marketing"
-              className="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <h3 className="font-semibold text-gray-900">Generate QR Code</h3>
-              <p className="text-sm text-gray-600">
-                Create marketing materials for your practice
-              </p>
-            </a>
-          </CardContent>
-        </Card>
-
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Referrals</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {recentReferrals.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">
-                No referrals yet. Start by inviting partners!
+          <CardContent className="p-4">
+            {activePartnerships.length === 0 ? (
+              <p className="text-gray-500 text-center py-8 text-sm">
+                No active partners yet. Start by inviting professionals!
               </p>
             ) : (
-              <div className="space-y-4">
-                {recentReferrals.map((referral) => (
-                  <div
-                    key={referral.id}
-                    className="flex items-start justify-between p-3 border border-gray-200 rounded-lg"
-                  >
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">
-                        {referral.clientName}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {referral.senderId === session.user.id
-                          ? `Sent to ${referral.receiver.profile?.firstName} ${referral.receiver.profile?.lastName}`
-                          : `From ${referral.sender.profile?.firstName} ${referral.sender.profile?.lastName}`}
-                      </p>
+              <div className="space-y-3">
+                {activePartnerships.map((partnership) => {
+                  const isInitiator = partnership.initiatorId === session.user.id
+                  const partnerProfile = isInitiator ? partnership.receiver?.profile : partnership.initiator?.profile
+                  const partnerName = partnerProfile 
+                    ? `${partnerProfile.firstName} ${partnerProfile.lastName}`
+                    : "Unknown"
+                  
+                  return (
+                    <div key={partnership.id} className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg">
+                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                        {partnerProfile?.photo ? (
+                          <img src={partnerProfile.photo} alt={partnerName} className="h-10 w-10 rounded-full object-cover" />
+                        ) : (
+                          <Users className="h-5 w-5 text-gray-400" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <h3 className="font-semibold text-gray-900 text-sm truncate">{partnerName}</h3>
+                          <Check className="h-4 w-4 text-green-600 flex-shrink-0 ml-2" />
+                        </div>
+                        <p className="text-xs text-gray-600 mb-1">
+                          {partnerProfile?.companyName || 'Company Name'}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500">{partnerProfile?.profession || 'Professional'}</span>
+                        </div>
+                      </div>
                     </div>
-                    <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        referral.status === 'COMPLETED'
-                          ? 'bg-green-100 text-green-800'
-                          : referral.status === 'IN_PROGRESS'
-                          ? 'bg-brand-teal-100 text-blue-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {referral.status}
-                    </span>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </CardContent>
         </Card>
+
+        {/* Invite Other Local Professionals (now right) */}
+        <Card>
+          <CardHeader className="bg-gray-50 border-b">
+            <CardTitle>Invite Other Local Professionals</CardTitle>
+            <p className="text-sm text-gray-600 mt-1">
+              Expand your Circle by inviting local, vetted professionals. Connect with top referrals and grow your network.
+            </p>
+          </CardHeader>
+          <CardContent className="p-4">
+            {professionalsWithStatus.length === 0 ? (
+              <p className="text-gray-500 text-center py-8 text-sm">
+                No suggested professionals at the moment. Check back later!
+              </p>
+            ) : (
+              <InviteProfessionalsList professionals={professionalsWithStatus} />
+            )}
+          </CardContent>
+        </Card>
       </div>
+
+      
+
+      {/* Share partners moved to the Marketing page */}
+
+      {/* Recent Referrals - Full Width */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Referrals</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {recentReferrals.length === 0 ? (
+            <p className="text-gray-500 text-center py-8">
+              No referrals yet. Start by inviting partners!
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {recentReferrals.map((referral) => (
+                <div
+                  key={referral.id}
+                  className="flex items-start justify-between p-3 border border-gray-200 rounded-lg"
+                >
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-900">
+                      {referral.clientName}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {referral.senderId === session.user.id
+                        ? `Sent to ${referral.receiver.profile?.firstName} ${referral.receiver.profile?.lastName}`
+                        : `From ${referral.sender.profile?.firstName} ${referral.sender.profile?.lastName}`}
+                    </p>
+                  </div>
+                  <span
+                    className={`px-2 py-1 text-xs font-medium rounded-full ${
+                      referral.status === 'COMPLETED'
+                        ? 'bg-green-100 text-green-800'
+                        : referral.status === 'IN_PROGRESS'
+                        ? 'bg-brand-teal-100 text-blue-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    {referral.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* AI Insights (if available) */}
       {analytics && analytics.predictedMonthlyReferrals > 0 && (

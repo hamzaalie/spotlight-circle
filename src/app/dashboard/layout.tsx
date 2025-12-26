@@ -67,8 +67,10 @@ export default async function DashboardLayout({
         }} 
         pendingInvitations={pendingInvitations} 
       />
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {children}
+      <main className="ml-64 mt-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+          {children}
+        </div>
       </main>
     </div>
   )
