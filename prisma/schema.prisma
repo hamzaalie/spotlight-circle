@@ -470,3 +470,23 @@ model ReferralRequest {
   @@index([createdAt])
   @@map("referral_requests")
 }
+
+model Waitlist {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  source       String?  @default("landing-page") // Track where signup came from
+  ipAddress    String?  // Optional: track IP for analytics
+  userAgent    String?  // Optional: track browser/device
+  referrer     String?  // Optional: track referral source
+  
+  // Track if they later signed up as a user
+  convertedAt  DateTime?
+  userId       String?
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([email])
+  @@index([createdAt])
+  @@map("waitlist")
+}

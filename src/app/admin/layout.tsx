@@ -9,7 +9,8 @@ import {
   GitPullRequest, 
   Settings, 
   Headphones,
-  LogOut 
+  LogOut,
+  Mail
 } from "lucide-react"
 
 export default async function AdminLayout({
@@ -41,6 +42,11 @@ export default async function AdminLayout({
       name: "Users",
       href: "/admin/users",
       icon: Users,
+    },
+    {
+      name: "Waitlist",
+      href: "/admin/waitlist",
+      icon: Mail,
     },
     {
       name: "Analytics",
