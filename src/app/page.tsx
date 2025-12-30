@@ -74,9 +74,8 @@ export default function LandingPage() {
       {/* Navigation */}
       <nav className="w-full bg-white py-6 px-4 sm:px-8 flex justify-between items-center max-w-7xl mx-auto z-50 relative">
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 rounded-full bg-[#3a7d91] flex items-center justify-center">
-            <span className="text-white font-bold text-xl">SC</span>
-          </div>
+          {/* Spotlight Circles Logo */}
+          <img src="/landing-page/images/logo.png" alt="Spotlight Circles" className="h-12 w-12" />
           <span className="font-bold text-xl tracking-tight text-slate-900">Spotlight Circles</span>
         </div>
         <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
@@ -134,15 +133,15 @@ export default function LandingPage() {
           {/* Right Column: The Circle Graphic */}
           <div className="order-1 lg:order-2 flex justify-center items-center py-10 lg:py-0 relative z-10">
             <div className="relative w-full max-w-[600px] aspect-square flex items-center justify-center">
-              
               {/* Center Node */}
               <div className="absolute z-20 w-32 h-32 sm:w-44 sm:h-44 rounded-full shadow-2xl p-2 bg-white flex items-center justify-center">
                 <div className="w-full h-full rounded-full overflow-hidden relative border-4 border-white group cursor-pointer">
-                  <div className="w-full h-full bg-gradient-to-br from-[#3a7d91] to-[#5a9dad] flex items-center justify-center">
-                    <span className="text-white font-bold text-3xl sm:text-5xl">SC</span>
-                  </div>
-                  <div className="absolute bottom-2 right-2 w-5 h-5 bg-green-500 border-4 border-white rounded-full z-30"></div>
+                  <img src="/landing-page/images/Center photo.png" alt="Host" className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110" />
+                  {/* Live Indicator */}
+                  <div className="absolute bottom-3 right-3 w-5 h-5 bg-green-500 border-4 border-white rounded-full z-30"></div>
                 </div>
+                {/* Pulse Ring behind center */}
+                <div className="absolute inset-0 rounded-full border-2 animate-ping opacity-20 -z-10" style={{ borderColor: '#b7dce6' }}></div>
               </div>
 
               {/* Satellite Nodes */}
