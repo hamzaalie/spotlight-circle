@@ -10,7 +10,8 @@ import {
   Settings, 
   Headphones,
   LogOut,
-  Mail
+  Mail,
+  Tag
 } from "lucide-react"
 
 export default async function AdminLayout({
@@ -42,6 +43,11 @@ export default async function AdminLayout({
       name: "Users",
       href: "/admin/users",
       icon: Users,
+    },
+    {
+      name: "Categories",
+      href: "/admin/categories",
+      icon: Tag,
     },
     {
       name: "Waitlist",

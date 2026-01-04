@@ -338,14 +338,6 @@ export default function DirectorySearch({
                         View Profile
                       </Button>
                     </Link>
-                    {prof.website && (
-                      <a href={prof.website} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" className="w-full">
-                          <Globe className="h-4 w-4 mr-2" />
-                          Visit Website
-                        </Button>
-                      </a>
-                    )}
                   </div>
                 </CardContent>
               </Card>

@@ -62,7 +62,7 @@ export function PublicNav() {
                 </Link>
                 <Link href="/auth/signup">
                   <Button className="bg-brand-gold-400 hover:bg-brand-gold-500 text-white shadow-lg">
-                    Get Started Free
+                    Get Started
                   </Button>
                 </Link>
               </>
@@ -110,7 +110,7 @@ export function PublicNav() {
                     </Link>
                     <Link href="/auth/signup" onClick={() => setMobileMenuOpen(false)}>
                       <Button className="w-full bg-brand-gold-400 hover:bg-brand-gold-500 text-white">
-                        Get Started Free
+                        Get Started
                       </Button>
                     </Link>
                   </>

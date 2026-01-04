@@ -1,21 +1,36 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface ProfessionalDetailsStepProps {
   data: {
     companyName: string
     profession: string
+    categoryId?: string
     services: string[]
     clientBaseSize: string
+    yearBusinessStarted?: string
   }
   onUpdate: (data: any) => void
   onNext: () => void
   onBack: () => void
+}
+
+interface Category {
+  id: string
+  name: string
+  order: number
 }
 
 const COMMON_SERVICES = [
@@ -27,6 +42,27 @@ const COMMON_SERVICES = [
 
 export function ProfessionalDetailsStep({ data, onUpdate, onNext, onBack }: ProfessionalDetailsStepProps) {
   const [serviceInput, setServiceInput] = useState("")
+  const [showAddWarning, setShowAddWarning] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loadingCategories, setLoadingCategories] = useState(true)
+
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/categories")
+        if (res.ok) {
+          const data = await res.json()
+          setCategories(data.categories)
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories:", error)
+      } finally {
+        setLoadingCategories(false)
+      }
+    }
+    fetchCategories()
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,6 +76,7 @@ export function ProfessionalDetailsStep({ data, onUpdate, onNext, onBack }: Prof
   const addService = (service: string) => {
     if (!data.services.includes(service)) {
       onUpdate({ services: [...data.services, service] })
+      setShowAddWarning(false)
     }
   }
 
@@ -51,6 +88,18 @@ export function ProfessionalDetailsStep({ data, onUpdate, onNext, onBack }: Prof
     if (serviceInput.trim()) {
       addService(serviceInput.trim())
       setServiceInput("")
+      setShowAddWarning(false)
+    } else {
+      setShowAddWarning(true)
+    }
+  }
+
+  const handleServiceInputChange = (value: string) => {
+    setServiceInput(value)
+    if (value.trim()) {
+      setShowAddWarning(true)
+    } else {
+      setShowAddWarning(false)
     }
   }
 
@@ -67,13 +116,57 @@ export function ProfessionalDetailsStep({ data, onUpdate, onNext, onBack }: Prof
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="profession">Profession *</Label>
+        <Label htmlFor="profession">Profession Category *</Label>
+        <Select
+          value={data.categoryId || ""}
+          onValueChange={(value) => {
+            const category = categories.find(c => c.id === value)
+            onUpdate({ 
+              categoryId: value,
+              profession: category?.name || data.profession 
+            })
+          }}
+          disabled={loadingCategories}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={loadingCategories ? "Loading categories..." : "Select your profession"} />
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.id}>
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-gray-500">
+          Choose the category that best describes your profession
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="professionTitle">Your Professional Title (Optional)</Label>
         <Input
-          id="profession"
+          id="professionTitle"
           value={data.profession}
           onChange={(e) => onUpdate({ profession: e.target.value })}
-          placeholder="Real Estate Agent, Financial Advisor, etc."
-          required
+          placeholder="e.g., Senior Real Estate Agent, Certified Financial Planner"
+        />
+        <p className="text-xs text-gray-500">
+          Add a specific title if you want to customize beyond the category
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="yearBusinessStarted">Year Business Started</Label>
+        <Input
+          id="yearBusinessStarted"
+          type="number"
+          value={data.yearBusinessStarted || ""}
+          onChange={(e) => onUpdate({ yearBusinessStarted: e.target.value })}
+          placeholder="e.g., 2015"
+          min="1900"
+          max={new Date().getFullYear()}
         />
       </div>
 
@@ -82,7 +175,7 @@ export function ProfessionalDetailsStep({ data, onUpdate, onNext, onBack }: Prof
         <div className="flex gap-2">
           <Input
             value={serviceInput}
-            onChange={(e) => setServiceInput(e.target.value)}
+            onChange={(e) => handleServiceInputChange(e.target.value)}
             placeholder="Add a service..."
             onKeyPress={(e) => {
               if (e.key === "Enter") {
@@ -91,7 +184,12 @@ export function ProfessionalDetailsStep({ data, onUpdate, onNext, onBack }: Prof
               }
             }}
           />
-          <Button type="button" onClick={handleAddCustomService} variant="outline">
+          <Button 
+            type="button" 
+            onClick={handleAddCustomService} 
+            variant={showAddWarning ? "default" : "outline"}
+            className={showAddWarning ? "bg-red-500 hover:bg-red-600 text-white" : ""}
+          >
             Add
           </Button>
         </div>

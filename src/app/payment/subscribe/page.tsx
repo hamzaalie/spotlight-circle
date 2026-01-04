@@ -164,7 +164,7 @@ function SubscribePageContent({ router }: { router: ReturnType<typeof useRouter>
 
                 <div className="bg-brand-teal-50 border border-brand-teal-200 rounded-lg p-3 text-center">
                   <p className="text-sm font-medium text-brand-teal-700">
-                    ✓ Cancel anytime • 30-day money-back guarantee
+                    ✓ Cancel anytime
                   </p>
                 </div>
               </CardContent>

@@ -88,9 +88,9 @@ export default async function DashboardPage() {
 
   // Only exclude accepted partners, keep pending and declined for display
   const acceptedPartnerIds = allPartnerships
-    .filter(p => p.status === 'ACCEPTED')
-    .map(p => p.initiatorId === session.user.id ? p.receiverId : p.initiatorId)
-    .filter((id): id is string => !!id)
+    .filter((p: any) => p.status === 'ACCEPTED')
+    .map((p: any) => p.initiatorId === session.user.id ? p.receiverId : p.initiatorId)
+    .filter((id: any): id is string => !!id)
 
   const suggestedProfessionals = await prisma.profile.findMany({
     where: {
@@ -109,8 +109,8 @@ export default async function DashboardPage() {
   })
 
   // Add partnership status to each professional
-  const professionalsWithStatus = suggestedProfessionals.map(prof => {
-    const partnership = allPartnerships.find(p => 
+  const professionalsWithStatus = suggestedProfessionals.map((prof: any) => {
+    const partnership = allPartnerships.find((p: any) => 
       (p.initiatorId === session.user.id && p.receiverId === prof.userId) ||
       (p.receiverId === session.user.id && p.initiatorId === prof.userId)
     )
@@ -181,10 +181,10 @@ export default async function DashboardPage() {
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-teal-500 focus:border-transparent"
                 />
                 <Button className="bg-brand-teal-600 hover:bg-brand-teal-700" asChild>
-                  <a href="/dashboard/partners/invite">Send Invite</a>
+                  <a href="/dashboard/partners/invite-simple">Send Invite</a>
                 </Button>
               </div>
-              <a href="/dashboard/partners/invite" className="inline-block mt-3 text-sm text-brand-teal-600 hover:text-brand-teal-700 font-medium">
+              <a href="/dashboard/partners" className="inline-block mt-3 text-sm text-brand-teal-600 hover:text-brand-teal-700 font-medium">
                 See Your Invites →
               </a>
             </CardContent>
@@ -213,9 +213,33 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Two Column Layout: Active Partners + Invite Professionals (swapped) */}
+      {/* Two Column Layout: Invite Professionals (left) + Active Partners (right) (swapped) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Your Partner Referrals (now left) */}
+        {/* Invite Other Local Professionals (now left) */}
+        <Card>
+          <CardHeader className="bg-gray-50 border-b">
+            <CardTitle>Invite Other Local Professionals</CardTitle>
+            <p className="text-sm text-gray-600 mt-1">
+              Expand your Circle by inviting other, local, professionals. Choose from one below or go to the Directory.
+            </p>
+          </CardHeader>
+          <CardContent className="p-4">
+            {professionalsWithStatus.length === 0 ? (
+              <p className="text-gray-500 text-center py-8 text-sm">
+                No suggested professionals at the moment. Check back later!
+              </p>
+            ) : (
+              <InviteProfessionalsList professionals={professionalsWithStatus} />
+            )}
+            <div className="mt-4 pt-4 border-t">
+              <Button className="w-full bg-brand-teal-600 hover:bg-brand-teal-700" asChild>
+                <a href="/directory">Go to Directory</a>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Your Partner Referrals (now right) */}
         <Card>
           <CardHeader className="bg-gray-50 border-b">
             <CardTitle>Your Active Partners</CardTitle>
@@ -230,7 +254,7 @@ export default async function DashboardPage() {
               </p>
             ) : (
               <div className="space-y-3">
-                {activePartnerships.map((partnership) => {
+                {activePartnerships.map((partnership: any) => {
                   const isInitiator = partnership.initiatorId === session.user.id
                   const partnerProfile = isInitiator ? partnership.receiver?.profile : partnership.initiator?.profile
                   const partnerName = partnerProfile 
@@ -265,25 +289,6 @@ export default async function DashboardPage() {
             )}
           </CardContent>
         </Card>
-
-        {/* Invite Other Local Professionals (now right) */}
-        <Card>
-          <CardHeader className="bg-gray-50 border-b">
-            <CardTitle>Invite Other Local Professionals</CardTitle>
-            <p className="text-sm text-gray-600 mt-1">
-              Expand your Circle by inviting local, vetted professionals. Connect with top referrals and grow your network.
-            </p>
-          </CardHeader>
-          <CardContent className="p-4">
-            {professionalsWithStatus.length === 0 ? (
-              <p className="text-gray-500 text-center py-8 text-sm">
-                No suggested professionals at the moment. Check back later!
-              </p>
-            ) : (
-              <InviteProfessionalsList professionals={professionalsWithStatus} />
-            )}
-          </CardContent>
-        </Card>
       </div>
 
       
@@ -302,7 +307,7 @@ export default async function DashboardPage() {
             </p>
           ) : (
             <div className="space-y-4">
-              {recentReferrals.map((referral) => (
+              {recentReferrals.map((referral: any) => (
                 <div
                   key={referral.id}
                   className="flex items-start justify-between p-3 border border-gray-200 rounded-lg"
@@ -357,7 +362,7 @@ export default async function DashboardPage() {
                     Suggested Partner Categories
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {analytics.missingCategories.map((category) => (
+                    {analytics.missingCategories.map((category: string) => (
                       <span
                         key={category}
                         className="px-3 py-1 bg-brand-teal-100 text-purple-800 rounded-full text-sm"

@@ -101,7 +101,7 @@ export default function PricingPage() {
                 </Button>
               </Link>
               <p className="text-xs text-center text-gray-500 mt-3">
-                Cancel anytime • 30-day money-back guarantee
+                Cancel anytime
               </p>
             </CardContent>
           </Card>
@@ -149,7 +149,7 @@ export default function PricingPage() {
                 </Button>
               </Link>
               <p className="text-xs text-center text-gray-500 mt-3">
-                Cancel anytime • 30-day money-back guarantee
+                Cancel anytime
               </p>
             </CardContent>
           </Card>
@@ -240,11 +240,10 @@ export default function PricingPage() {
 
             <div>
               <h3 className="font-semibold text-lg text-gray-900 mb-2">
-                Is there a free trial?
+                Can I cancel my subscription?
               </h3>
               <p className="text-gray-600">
-                Due to the setup fee and network quality standards, we don't offer free trials. 
-                However, you can cancel within the first 30 days for a full refund if you're not satisfied.
+                Yes, you can cancel your subscription at any time from your account settings. You'll continue to have access until the end of your current billing period.
               </p>
             </div>
 
@@ -270,11 +269,11 @@ export default function PricingPage() {
           </p>
           <Link href="/auth/signup">
             <Button size="lg" className="bg-white text-brand-teal-600 hover:bg-gray-100 text-lg px-8 py-6">
-              Start Your Free 30-Day Trial
+              Get Started
             </Button>
           </Link>
           <p className="text-brand-teal-50 text-sm mt-4">
-            30-day money-back guarantee • Cancel anytime
+            Cancel anytime
           </p>
         </div>
       </main>

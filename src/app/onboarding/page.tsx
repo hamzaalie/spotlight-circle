@@ -42,6 +42,8 @@ function OnboardingPageContent({ router }: { router: ReturnType<typeof useRouter
     // Professional Details
     companyName: "",
     profession: "",
+    categoryId: "",
+    yearBusinessStarted: "",
     services: [] as string[],
     clientBaseSize: "",
     

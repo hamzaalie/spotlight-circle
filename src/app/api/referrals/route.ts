@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
       // Send email notification
       if (receiverUser?.email) {
         const emailPromise = resend.emails.send({
-          from: "Spotlight Circles <no-reply@spotlightcircles.com>",
+          from: "Spotlight Circles <noreply@spotlightcircles.com>",
           to: receiverUser.email,
           subject: `New Referral from ${senderProfile.firstName} ${senderProfile.lastName}`,
           html: `

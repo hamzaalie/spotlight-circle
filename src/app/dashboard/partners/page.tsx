@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { PartnerCard } from "@/components/partners/PartnerCard"
 import { PendingInvitations } from "@/components/partners/PendingInvitations"
+import { Clock, Mail, CheckCircle, XCircle, Send } from "lucide-react"
 
 export default async function PartnersPage() {
   const session = await auth()
@@ -47,10 +48,12 @@ export default async function PartnersPage() {
   const allPartnerships = [...initiatedPartnerships, ...receivedPartnerships]
   const activePartners = allPartnerships.filter((p) => p.status === "ACCEPTED")
   const pendingInvitations = receivedPartnerships.filter((p) => p.status === "PENDING")
+  const sentInvitations = initiatedPartnerships.filter((p) => p.status === "PENDING")
 
   const stats = {
     total: activePartners.length,
     pending: pendingInvitations.length,
+    sent: sentInvitations.length,
     categories: new Set(
       activePartners.map((p) => p.category).filter(Boolean)
     ).size,
@@ -71,7 +74,7 @@ export default async function PartnersPage() {
               Bulk Invite
             </Button>
           </Link>
-          <Link href="/dashboard/partners/invite">
+          <Link href="/dashboard/partners/invite-simple">
             <Button className="bg-brand-gold-400 hover:bg-brand-gold-500">
               + Invite Partner
             </Button>
@@ -80,11 +83,17 @@ export default async function PartnersPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Total Partners</CardDescription>
             <CardTitle className="text-3xl">{stats.total}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardDescription>Invites Sent</CardDescription>
+            <CardTitle className="text-3xl">{stats.sent}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
@@ -100,6 +109,70 @@ export default async function PartnersPage() {
           </CardHeader>
         </Card>
       </div>
+
+      {/* Sent Invitations */}
+      {sentInvitations.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Send className="h-5 w-5 text-brand-teal-600" />
+              Invitations Sent ({sentInvitations.length})
+            </CardTitle>
+            <CardDescription>
+              Invitations you've sent that are awaiting response
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {sentInvitations.map((invitation) => {
+                const receiver = (invitation as any).receiver
+                const receiverName = receiver?.profile 
+                  ? `${receiver.profile.firstName} ${receiver.profile.lastName}`
+                  : invitation.invitedEmail || "Unknown"
+                const receiverProfession = receiver?.profile?.profession || invitation.category || "Professional"
+                const receiverPhoto = receiver?.profile?.photo
+                
+                return (
+                  <div 
+                    key={invitation.id} 
+                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10">
+                        {receiverPhoto ? (
+                          <AvatarImage src={receiverPhoto} alt={receiverName} />
+                        ) : null}
+                        <AvatarFallback className="bg-brand-teal-100 text-brand-teal-700">
+                          {receiverName.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium text-gray-900">{receiverName}</p>
+                        <p className="text-sm text-gray-500">{receiverProfession}</p>
+                        {invitation.invitedEmail && !receiver && (
+                          <p className="text-xs text-gray-400 flex items-center gap-1">
+                            <Mail className="h-3 w-3" />
+                            {invitation.invitedEmail}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">
+                        <Clock className="h-3 w-3 mr-1" />
+                        Pending
+                      </Badge>
+                      <span className="text-xs text-gray-400">
+                        {new Date(invitation.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Pending Invitations */}
       {pendingInvitations.length > 0 && (
@@ -120,7 +193,7 @@ export default async function PartnersPage() {
               <p className="text-gray-500 mb-4">
                 You don't have any active partners yet
               </p>
-              <Link href="/dashboard/partners/invite">
+              <Link href="/dashboard/partners/invite-simple">
                 <Button>Invite Your First Partner</Button>
               </Link>
             </div>

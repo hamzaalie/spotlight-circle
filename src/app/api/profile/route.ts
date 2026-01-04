@@ -32,6 +32,8 @@ export async function POST(req: NextRequest) {
       photo,
       companyName,
       profession,
+      categoryId,
+      yearBusinessStarted,
       services,
       clientBaseSize,
       city,
@@ -79,6 +81,8 @@ export async function POST(req: NextRequest) {
         photo: photo || null,
         companyName: companyName || null,
         profession,
+        categoryId: categoryId || null,
+        yearBusinessStarted: yearBusinessStarted ? parseInt(yearBusinessStarted) : null,
         services,
         clientBaseSize: clientBaseSize ? parseInt(clientBaseSize) : null,
         city,
@@ -181,6 +185,8 @@ export async function PATCH(req: NextRequest) {
       zipCode,
       companyName,
       profession,
+      categoryId,
+      yearBusinessStarted,
       biography,
     } = await req.json()
 
@@ -211,6 +217,8 @@ export async function PATCH(req: NextRequest) {
         zipCode,
         companyName: companyName || null,
         profession,
+        categoryId: categoryId || undefined,
+        yearBusinessStarted: yearBusinessStarted ? parseInt(yearBusinessStarted) : undefined,
         biography: biography || null,
       },
     })

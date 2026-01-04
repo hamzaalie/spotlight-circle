@@ -29,12 +29,12 @@ export default function DashboardNav({ user, pendingInvitations = 0 }: Dashboard
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "View Profile", href: `/p/${user.referralSlug}`, icon: UserIcon, external: true },
+    { name: "Share With Clients", href: "/dashboard/marketing", icon: Mail },
+    { name: "Profile", href: "/dashboard/my-profile", icon: UserIcon },
     { name: "Partners", href: "/dashboard/partners", icon: Users, badge: pendingInvitations },
     { name: "Referrals", href: "/dashboard/referrals", icon: Link2 },
     { name: "Referral Requests", href: "/dashboard/referral-requests", icon: UserPlus },
     { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-    { name: "Marketing", href: "/dashboard/marketing", icon: Mail },
     { name: "Poster", href: "/dashboard/poster", icon: Printer },
   ]
 
@@ -101,7 +101,7 @@ export default function DashboardNav({ user, pendingInvitations = 0 }: Dashboard
       <aside className="fixed left-0 top-0 w-64 bg-white shadow-lg flex flex-col h-screen border-r">
         {/* Logo */}
         <div className="p-6 border-b">
-          <Link href="/dashboard" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <img src="/images/logo.png" alt="Spotlight Circles" className="h-10 w-10" />
             <span className="text-lg font-bold text-brand-teal-500">
               Spotlight Circles

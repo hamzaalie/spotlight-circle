@@ -10,6 +10,8 @@ import Image from "next/image"
 import { headers } from "next/headers"
 import { auth } from "@/auth"
 import { RequestReferralButton } from "@/components/public/RequestReferralButton"
+import { RequestPartnershipButton } from "@/components/partners/RequestPartnershipButton"
+import { ExpandableBiography } from "@/components/public/ExpandableBiography"
 import dynamic from "next/dynamic"
 
 const ProfileMap = dynamic(() => import("@/components/public/ProfileMap"), {
@@ -50,6 +52,17 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
 
   const isOwnProfile = session?.user?.id === profile.user.id
 
+  // Check if current viewer is a partner with this profile
+  const isPartner = session?.user?.id ? await prisma.partnership.findFirst({
+    where: {
+      status: "ACCEPTED",
+      OR: [
+        { initiatorId: profile.user.id, receiverId: session.user.id },
+        { receiverId: profile.user.id, initiatorId: session.user.id },
+      ],
+    },
+  }) : null
+
   // Fetch partnerships
   const partnerships = await prisma.partnership.findMany({
     where: {
@@ -66,7 +79,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
     orderBy: { createdAt: "desc" },
   })
 
-  const partners = partnerships.map((p) => {
+  const partners = partnerships.map((p: any) => {
     const isInitiator = p.initiatorId === profile.user.id
     const partnerUser = isInitiator ? p.receiver : p.initiator
     return {
@@ -75,7 +88,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
       partnerUserId: partnerUser?.id,
       category: p.category,
     }
-  }).filter(p => p.partnerProfile && p.partnerUserId)
+  }).filter((p: any) => p.partnerProfile && p.partnerUserId)
 
   const partnersByCategory = partners.reduce((acc: any, partner: any) => {
     const category = partner.category || "Other"
@@ -104,7 +117,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
     totalPartners: partners.length,
     totalReferralsGiven: referralsGiven.length,
     totalReferralsReceived: referralsReceived.length,
-    completedReferrals: referralsGiven.filter(r => r.status === "COMPLETED").length,
+    completedReferrals: referralsGiven.filter((r: any) => r.status === "COMPLETED").length,
     categories: Object.keys(partnersByCategory).length,
   }
 
@@ -139,13 +152,23 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-brand-teal-600 to-brand-gold-500 bg-clip-text text-transparent">
-              Spotlight Circles
+            <Link href="/" className="flex items-center gap-3">
+              <img src="/images/logo.png" alt="Spotlight Circles" className="h-10 w-10" />
+              <span className="text-xl font-bold text-brand-teal-500">
+                Spotlight Circles
+              </span>
             </Link>
             {isOwnProfile && (
-              <Link href="/dashboard/settings">
-                <Button variant="outline" size="sm">Edit Profile</Button>
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link href="/dashboard/marketing">
+                  <Button className="bg-brand-teal-500 hover:bg-brand-teal-600 text-white">
+                    Share With Clients
+                  </Button>
+                </Link>
+                <Link href="/dashboard/settings">
+                  <Button variant="outline" size="sm">Edit Profile</Button>
+                </Link>
+              </div>
             )}
           </div>
         </div>
@@ -159,7 +182,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
               {/* Left Column - Avatar and Info */}
               <div className="lg:col-span-2">
                 <div className="flex items-start gap-6 mb-6">
-                  <div className="h-52 w-52 md:h-60 md:w-60 border-4 border-white shadow-xl rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="h-64 w-64 md:h-72 md:w-72 border-2 border-gray-200 shadow-xl rounded-lg overflow-hidden flex-shrink-0">
                     {profile.photo ? (
                       <img 
                         src={profile.photo} 
@@ -202,42 +225,105 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
                         <ShieldCheck className="h-3 w-3 mr-1" />
                         Verified
                       </Badge>
+                      {!isOwnProfile && isPartner && (
+                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border border-green-300">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                          Connected
+                        </Badge>
+                      )}
                     </div>
                     
                     {/* Rating - removed */}
                     
                     
-                    {/* Contact Info */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <Phone className="h-4 w-4 text-brand-teal-600" />
-                        <span className="font-medium">{profile.phone || "null"}</span>
+                    {/* Contact Info - Only visible to partners or owner */}
+                    {(isOwnProfile || isPartner) && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-gray-700">
+                          <Phone className="h-4 w-4 text-brand-teal-600" />
+                          <span className="font-medium">{profile.phone || "null"}</span>
+                        </div>
+                        {profile.user?.email && (
+                          <div className="flex items-center gap-2 text-gray-700">
+                            <Mail className="h-4 w-4 text-brand-teal-600" />
+                            <span className="font-medium">{profile.user.email}</span>
+                          </div>
+                        )}
+                        {location && (
+                          <div className="flex items-center gap-2 text-gray-700">
+                            <MapPin className="h-4 w-4 text-brand-teal-600" />
+                            <span>{location}</span>
+                          </div>
+                        )}
+                        {profile.website && (
+                          <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-brand-teal-600 hover:text-brand-teal-700 font-medium">
+                            <Globe className="h-4 w-4" /><span>Visit Website</span>
+                          </a>
+                        )}
                       </div>
-                      {profile.user?.email && (
-                        <div className="flex items-center gap-2 text-gray-700">
-                          <Mail className="h-4 w-4 text-brand-teal-600" />
-                          <span className="font-medium">{profile.user.email}</span>
+                    )}
+                    
+                    {/* Location visible to all */}
+                    {!isOwnProfile && !isPartner && (
+                      <div className="space-y-2">
+                        {location && (
+                          <div className="flex items-center gap-2 text-gray-700">
+                            <MapPin className="h-4 w-4 text-brand-teal-600" />
+                            <span>{location}</span>
+                          </div>
+                        )}
+                        {profile.website && (
+                          <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-brand-teal-600 hover:text-brand-teal-700 font-medium">
+                            <Globe className="h-4 w-4" /><span>Visit Website</span>
+                          </a>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Request Partnership Button - For non-partners */}
+                    {!isOwnProfile && !isPartner && session?.user?.id && (
+                      <div className="mt-6 pt-4 border-t border-gray-200">
+                        <div className="bg-brand-teal-50 border border-brand-teal-200 rounded-lg p-4">
+                          <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                            <Users className="h-5 w-5 text-brand-teal-600" />
+                            Want to connect?
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-3">
+                            Send a partnership request to access contact information and request referrals.
+                          </p>
+                          <RequestPartnershipButton 
+                            profileUserId={profile.user.id}
+                            profileName={`${profile.firstName} ${profile.lastName}`}
+                          />
                         </div>
-                      )}
-                      {location && (
-                        <div className="flex items-center gap-2 text-gray-700">
-                          <MapPin className="h-4 w-4 text-brand-teal-600" />
-                          <span>{location}</span>
+                      </div>
+                    )}
+                    
+                    {/* Login prompt for non-authenticated users */}
+                    {!isOwnProfile && !session?.user?.id && (
+                      <div className="mt-6 pt-4 border-t border-gray-200">
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                          <h3 className="font-semibold text-gray-900 mb-2">
+                            Want to connect with this professional?
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-3">
+                            Sign in to send partnership requests and access referrals.
+                          </p>
+                          <Link href="/auth/signin">
+                            <Button className="w-full bg-brand-teal-500 hover:bg-brand-teal-600 text-white">
+                              Sign In to Connect
+                            </Button>
+                          </Link>
                         </div>
-                      )}
-                      {profile.website && (
-                        <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-brand-teal-600 hover:text-brand-teal-700 font-medium">
-                          <Globe className="h-4 w-4" /><span>Visit Website</span>
-                        </a>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
               
               {/* Right Column - Map */}
               <div className="lg:col-span-1">
-                <div className="bg-gray-100 rounded-lg overflow-hidden h-64 lg:h-full min-h-[250px] relative">
+                <div className="bg-gray-100 rounded-lg overflow-hidden h-64 md:h-72 relative border-2 border-gray-200 shadow-xl">
                   <ProfileMap
                     latitude={profile.latitude}
                     longitude={profile.longitude}
@@ -251,10 +337,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
             {/* About Section */}
             <div className="space-y-6 mb-8">
               {profile.biography && (
-                <Card>
-                  <CardHeader><CardTitle className="flex items-center gap-2 text-brand-teal-700"><Briefcase className="h-5 w-5" />Professional Biography</CardTitle></CardHeader>
-                  <CardContent><p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{profile.biography}</p></CardContent>
-                </Card>
+                <ExpandableBiography biography={profile.biography} />
               )}
             </div>
 
@@ -262,7 +345,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
             <div className="space-y-6 mb-8">
               <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                 <Users className="h-6 w-6 text-brand-teal-600" />
-                Trusted Professionals ({partners.length})
+                Our Trusted Referral Partners
               </h2>
               {partners.length === 0 ? (
                 <Card><CardContent className="py-12 text-center">
@@ -341,7 +424,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
                     <p className="text-center text-gray-500 py-8">No references yet</p>
                   ) : (
                     <div className="space-y-3 max-h-96 overflow-y-auto">
-                      {referralsGiven.map((referral) => (
+                      {referralsGiven.map((referral: any) => (
                         <div key={referral.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
                           <Avatar className="h-10 w-10">
                             <AvatarImage src={referral.receiver.profile?.photo || undefined} />
@@ -354,7 +437,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
                           </div>
                         </div>
                       ))}
-                      {referralsReceived.map((referral) => (
+                      {referralsReceived.map((referral: any) => (
                         <div key={referral.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
                           <Avatar className="h-10 w-10">
                             <AvatarImage src={referral.sender.profile?.photo || undefined} />
@@ -377,7 +460,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
             <div className="mt-8 p-6 bg-gradient-to-r from-brand-teal-50 to-brand-gold-50 rounded-xl border-2 border-brand-teal-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Want to build your own referral network?</h3>
               <p className="text-gray-600 mb-4">Join Spotlight Circles to connect with professionals, exchange referrals, and grow your business.</p>
-              <Link href="/auth/signup"><Button className="bg-gradient-to-r from-brand-teal-500 to-brand-gold-400 hover:from-brand-teal-600 hover:to-brand-gold-500">Get Started Free</Button></Link>
+              <Link href="/auth/signup"><Button className="bg-gradient-to-r from-brand-teal-500 to-brand-gold-400 hover:from-brand-teal-600 hover:to-brand-gold-500">Get Started</Button></Link>
             </div>
           </CardContent>
         </Card>

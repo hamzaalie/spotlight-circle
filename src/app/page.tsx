@@ -131,8 +131,8 @@ export default function HomePage() {
       number: 3,
       title: "Share With Clients",
       tasks: [
-        "We create a referral link and QR code",
-        "We create a referral poster"
+        "We create a referral link and QR code that you can share with your Clients",
+        "We create a referral poster for your lobby or waiting area"
       ],
       result: "Clients access your circle",
     },
@@ -372,7 +372,7 @@ export default function HomePage() {
                 Our AI platform makes referrals effortless—no work and, no ad spend.
               </p>
 
-              <Link href="/pricing">
+              <Link href="/auth/signup">
                 <Button className="bg-brand-gold-400 hover:bg-brand-gold-500 text-white px-8 py-6 rounded-full">
                   Get Started
                   <ArrowRight className="ml-2 w-5 h-5" />
@@ -471,7 +471,7 @@ export default function HomePage() {
                 <div className="mb-8 text-center border-b border-gray-100 pb-6">
                   <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Total Exposure</h4>
                   <div className="text-4xl font-extrabold text-gray-900">
-                    From <span className="text-gray-400 decoration-gray-300 line-through mr-2 text-3xl">1,000</span> to <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal-600 to-brand-gold-600">10,000</span>
+                    From <span className="text-gray-500 line-through mr-2 text-3xl">1,000</span> to <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal-600 to-brand-gold-600">10,000</span>
                   </div>
                   <div className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
                     <TrendingUp className="w-3 h-3" />
@@ -613,7 +613,7 @@ xl font-bold text-gray-900 mb-4 text-center">
           <div className="mt-20 text-center">
             <Link href="/auth/signup">
               <Button className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-brand-teal-600 rounded-full hover:bg-brand-teal-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-teal-500">
-                Apply to Join a Circle
+                Get Started
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
@@ -752,51 +752,6 @@ xl font-bold text-gray-900 mb-4 text-center">
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20 lg:py-32 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-12">
-            <div>
-              <div className="inline-block mb-6">
-                <span className="text-sm font-semibold text-brand-teal-400 bg-brand-teal-500/10 px-4 py-2 rounded-full border border-brand-teal-500/20">
-                  SUCCESS STORIES
-                </span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
-                Professionals trust Spotlight Circles to grow their business
-              </h2>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div
-                key={index}
-                className="bg-white border border-gray-200 rounded-3xl p-8 shadow-lg"
-              >
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">{testimonial.name}</h3>
-                  <p className="text-gray-600 text-sm mb-3">{testimonial.role}, {testimonial.company}</p>
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-5 h-5 ${
-                          i < testimonial.rating
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'text-gray-600'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-gray-700 leading-relaxed">"{testimonial.content}"</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-20 lg:py-32 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -814,7 +769,7 @@ xl font-bold text-gray-900 mb-4 text-center">
                 </div>
 
                 <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                  Join Your Circle Today
+                  Create your first circle today
                 </h2>
 
                 <p className="text-lg text-gray-600 mb-8 leading-relaxed">

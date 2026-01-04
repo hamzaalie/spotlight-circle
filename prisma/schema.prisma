@@ -49,6 +49,18 @@ enum WebhookEventStatus {
   FAILED
 }
 
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  order       Int      @default(0) // For sorting in dropdown
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("categories")
+}
+
 enum TicketStatus {
   OPEN
   IN_PROGRESS
@@ -126,8 +138,10 @@ model Profile {
   // Business Info
   companyName     String?
   profession      String
+  categoryId      String? // Link to profession category
   services        String[] // Array of services offered
   clientBaseSize  Int?
+  yearBusinessStarted Int?
   
   // Referral Link
   referralSlug    String   @unique

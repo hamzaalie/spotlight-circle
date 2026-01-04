@@ -96,12 +96,12 @@ export function RequestReferralButton({
           className="w-full border-brand-teal-400 text-brand-teal-700 hover:bg-brand-teal-50 font-semibold"
         >
           <Send className="h-4 w-4 mr-2" />
-          Request Referral
+          Request Introduction
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Request Referral to {partnerName}</DialogTitle>
+          <DialogTitle>Request Introduction to {partnerName}</DialogTitle>
           <DialogDescription>
             Fill out your information and we'll forward your request to connect you with{" "}
             {partnerName}, a {partnerProfession}.

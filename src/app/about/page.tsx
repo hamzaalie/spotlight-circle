@@ -99,28 +99,11 @@ export default function AboutPage() {
                   to help professionals like real estate agents, mortgage advisors,
                   attorneys, and insurance brokers grow through trust.
                 </p>
-                <p className="text-brand-teal-600 font-semibold">
-                  Today, we're proud to power thousands of referral relationships that
-                  generate real revenue and lasting partnerships.
-                </p>
               </div>
             </div>
 
             <div className="bg-gradient-to-br from-blue-600/10 to-purple-600/10 backdrop-blur-sm border border-white/10 rounded-3xl p-8 lg:p-12">
               <div className="space-y-8">
-                <div className="flex gap-6">
-                  <div className="flex-shrink-0">
-                    <div className="w-16 h-16 rounded-xl bg-brand-teal-500 flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">2024</span>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">The Spark</h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      After watching professionals struggle with fragmented networks and missed opportunities, our founder envisioned a platform that could bring order to the chaos of referral relationships.
-                    </p>
-                  </div>
-                </div>
                 <div className="flex gap-6">
                   <div className="flex-shrink-0">
                     <div className="w-16 h-16 rounded-xl bg-brand-teal-500 flex items-center justify-center">
@@ -130,7 +113,7 @@ export default function AboutPage() {
                   <div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">Launch & Growth</h3>
                     <p className="text-gray-600 leading-relaxed">
-                      Spotlight Circles launched with AI-powered partner matching and automated tracking. Early adopters saw 40% more referrals in their first 90 days.
+                      Spotlight Circles launched with AI-powered partner matching and automated tracking.
                     </p>
                   </div>
                 </div>

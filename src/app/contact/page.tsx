@@ -19,7 +19,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
         onClick={() => setIsOpen(!isOpen)}
         className="w-full p-6 text-left flex items-start justify-between gap-4"
       >
-        <h3 className="text-lg font-bold text-gray-900 flex-1">{question}</h3>
+        <h3 className="text-lg font-bold text-gray-900 flex-1 whitespace-nowrap overflow-hidden text-ellipsis">{question}</h3>
         <ChevronDown
           className={`w-5 h-5 text-brand-teal-400 flex-shrink-0 mt-1 transition-transform ${
             isOpen ? "rotate-180" : ""
@@ -149,10 +149,10 @@ export default function ContactPage() {
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Email Us</p>
                     <a
-                      href="mailto:support@spotlightcircles.com"
+                      href="mailto:info@spotlightcircles.com"
                       className="text-gray-900 hover:text-brand-teal-600 transition-colors font-medium"
                     >
-                      support@spotlightcircles.com
+                      info@spotlightcircles.com
                     </a>
                   </div>
                 </div>
@@ -164,10 +164,10 @@ export default function ContactPage() {
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Call Us</p>
                     <a
-                      href="tel:+1234567890"
+                      href="tel:+19496064751"
                       className="text-gray-900 hover:text-brand-teal-600 transition-colors font-medium"
                     >
-                      +1 (234) 567-890
+                      (949) 606-4751
                     </a>
                   </div>
                 </div>
@@ -178,7 +178,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Location</p>
-                    <p className="text-gray-900 font-medium">San Francisco, CA</p>
+                    <p className="text-gray-900 font-medium">San Diego</p>
                     <p className="text-gray-600 text-sm mt-1">
                       Serving professionals nationwide
                     </p>
@@ -313,10 +313,10 @@ export default function ContactPage() {
                         We typically respond within 24 hours during business days. For
                         urgent inquiries, please email us directly at{" "}
                         <a
-                          href="mailto:support@spotlightcircles.com"
+                          href="mailto:info@spotlightcircles.com"
                           className="text-brand-teal-400 hover:text-blue-300 font-semibold"
                         >
-                          support@spotlightcircles.com
+                          info@spotlightcircles.com
                         </a>
                       </p>
                     </div>
@@ -366,16 +366,16 @@ export default function ContactPage() {
               answer="Most professionals send their first referral within 7 days of onboarding. Our AI partner matching helps you identify high-quality connections immediately, and our templates make introductions fast."
             />
             <FAQItem 
-              question="Is there a free trial?"
-              answer="Yes! We offer a 14-day free trial with full access to all features. No credit card required. You can cancel anytime if it's not the right fit."
+              question="Cancel anytime"
+              answer="If it's not the right fit, feel free to cancel anytime."
             />
             <FAQItem 
-              question="Can I invite partners who aren't using Spotlight Circles yet?"
+              question="Can I invite partners who aren't using Spotlight Circles?"
               answer="Absolutely! You can send partner invitations to anyone. They'll receive an invite to join your circle and create their own account. It's the easiest way to bring your existing network onto the platform."
             />
             <FAQItem 
               question="What kind of support do you offer?"
-              answer="We provide email support, in-app help articles, video tutorials, and personalized onboarding for all new users. Premium plans include priority support and dedicated account management."
+              answer="We provide email support, video tutorials and personalized onboarding for all new users."
             />
           </div>
         </div>

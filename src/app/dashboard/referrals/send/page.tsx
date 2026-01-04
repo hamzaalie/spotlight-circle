@@ -193,7 +193,7 @@ export default function SendReferralPage() {
               ) : partners.length === 0 ? (
                 <div className="text-center py-8 bg-gray-50 rounded-md">
                   <p className="text-gray-500 mb-2">No active partners yet</p>
-                  <Link href="/dashboard/partners/invite">
+                  <Link href="/dashboard/partners/invite-simple">
                     <Button size="sm">Invite a Partner</Button>
                   </Link>
                 </div>

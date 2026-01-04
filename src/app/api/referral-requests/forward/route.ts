@@ -75,6 +75,60 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    // AUTO-CONNECT: Create partnership between requester and partner
+    // Find the requester's user account by email
+    const requesterUser = await prisma.user.findUnique({
+      where: { email: referralRequest.requesterEmail.toLowerCase() },
+      include: { profile: true },
+    })
+
+    if (requesterUser && requesterUser.id !== referralRequest.partnerUserId) {
+      // Check if partnership already exists
+      const existingPartnership = await prisma.partnership.findFirst({
+        where: {
+          OR: [
+            {
+              initiatorId: requesterUser.id,
+              receiverId: referralRequest.partnerUserId,
+            },
+            {
+              initiatorId: referralRequest.partnerUserId,
+              receiverId: requesterUser.id,
+            },
+          ],
+        },
+      })
+
+      if (!existingPartnership) {
+        // Create automatic partnership between requester and partner
+        await prisma.partnership.create({
+          data: {
+            initiatorId: requesterUser.id,
+            receiverId: referralRequest.partnerUserId,
+            status: "ACCEPTED", // Auto-accept since it's a forwarded connection
+            category: requesterUser.profile?.profession || "Professional",
+            notes: `Auto-connected via referral forwarding by ${senderName}`,
+          },
+        })
+
+        // Update analytics for both users
+        await Promise.all([
+          prisma.userAnalytics.upsert({
+            where: { userId: requesterUser.id },
+            update: { totalPartners: { increment: 1 } },
+            create: { userId: requesterUser.id, totalPartners: 1 },
+          }),
+          prisma.userAnalytics.upsert({
+            where: { userId: referralRequest.partnerUserId },
+            update: { totalPartners: { increment: 1 } },
+            create: { userId: referralRequest.partnerUserId, totalPartners: 1 },
+          }),
+        ])
+
+        console.log(`Auto-connected ${referralRequest.requesterEmail} with partner ${referralRequest.partnerUserId}`)
+      }
+    }
+
     // Send email to partner
     const partnerProfile = referralRequest.partnerUser.profile
     const senderProfile = referralRequest.profileOwner.profile

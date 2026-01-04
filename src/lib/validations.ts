@@ -18,7 +18,7 @@ export const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   phone: z.string().optional(),
-  website: z.string().url().optional().or(z.literal('')),
+  website: z.string().optional().or(z.literal('')),
   companyName: z.string().optional(),
   profession: z.string().min(1, 'Profession is required'),
   services: z.array(z.string()).min(1, 'At least one service is required'),
