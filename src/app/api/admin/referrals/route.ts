@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 
+export const dynamic = 'force-dynamic'
+
 // GET /api/admin/referrals - Get all referrals with filters
 export async function GET(req: NextRequest) {
   try {
