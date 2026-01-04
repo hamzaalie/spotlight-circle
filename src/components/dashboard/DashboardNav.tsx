@@ -27,7 +27,13 @@ interface DashboardNavProps {
 export default function DashboardNav({ user, pendingInvitations = 0 }: DashboardNavProps) {
   const pathname = usePathname()
 
-  const navigation = [
+  const navigation: Array<{
+    name: string
+    href: string
+    icon: any
+    badge?: number
+    external?: boolean
+  }> = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Share With Clients", href: "/dashboard/marketing", icon: Mail },
     { name: "Profile", href: "/dashboard/my-profile", icon: UserIcon },
