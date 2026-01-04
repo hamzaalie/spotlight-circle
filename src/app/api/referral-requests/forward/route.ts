@@ -75,6 +75,12 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    // Get sender name for use in notifications
+    const senderProfile = referralRequest.profileOwner.profile
+    const senderName = senderProfile
+      ? `${senderProfile.firstName} ${senderProfile.lastName}`
+      : referralRequest.profileOwner.email
+
     // AUTO-CONNECT: Create partnership between requester and partner
     // Find the requester's user account by email
     const requesterUser = await prisma.user.findUnique({
@@ -131,10 +137,6 @@ export async function POST(req: NextRequest) {
 
     // Send email to partner
     const partnerProfile = referralRequest.partnerUser.profile
-    const senderProfile = referralRequest.profileOwner.profile
-    const senderName = senderProfile
-      ? `${senderProfile.firstName} ${senderProfile.lastName}`
-      : referralRequest.profileOwner.email
 
     const emailSubject = `New Referral from ${senderName}`
     const emailHtml = `
