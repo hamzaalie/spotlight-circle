@@ -69,12 +69,12 @@ export default function HomePage() {
   }, [])
 
   const circleProfessionals = [
-    { icon: Heart, label: "Dentist", color: "blue" },
-    { icon: Briefcase, label: "RE Agent", color: "green" },
-    { icon: Home, label: "Interior Designer", color: "purple" },
-    { icon: Users, label: "Hair Stylist", color: "red" },
-    { icon: Building2, label: "Attorney", color: "yellow" },
-    { icon: Shield, label: "Insurance Agent", color: "indigo" },
+    { img: "/landing-page/images/Insurance agent.png", label: "Insurance Agent" },
+    { img: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80", label: "Dentist" },
+    { img: "/landing-page/images/realtor.png", label: "Realtor" },
+    { img: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80", label: "Veterinarian" },
+    { img: "/landing-page/images/interior designer.jpg", label: "Interior Designer" },
+    { img: "/landing-page/images/Hair stylist.jpg", label: "Hair Stylist" },
   ]
 
   // Rotating professionals for the animation section
@@ -286,10 +286,37 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right Side - Animated Circle Formation with Logo */}
+            {/* Right Side - Animated Circle Formation with Photos */}
             <div className="order-1 lg:order-2 relative h-[450px] lg:h-[550px] flex items-center justify-center">
+              {/* SVG Layer for Dotted Lines */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+                {circleProfessionals.map((_, index) => {
+                  const angle = (index * 360) / 6 - 90
+                  const radian = (angle * Math.PI) / 180
+                  const lineLengthFactor = 35
+                  const x2 = 50 + Math.cos(radian) * lineLengthFactor
+                  const y2 = 50 + Math.sin(radian) * lineLengthFactor
+                  return (
+                    <line
+                      key={index}
+                      x1="50%"
+                      y1="50%"
+                      x2={`${x2}%`}
+                      y2={`${y2}%`}
+                      stroke="#cbd5e1"
+                      strokeWidth="2"
+                      strokeDasharray="6 6"
+                      style={{
+                        opacity: animationStarted ? 1 : 0,
+                        transition: 'opacity 0.5s ease-out',
+                        transitionDelay: `${800 + index * 100}ms`,
+                      }}
+                    />
+                  )
+                })}
+              </svg>
+
               {circleProfessionals.map((professional, index) => {
-                const Icon = professional.icon
                 // Calculate circle position for 6 professionals
                 const angle = (index * 360) / 6
                 const radius = 180
@@ -299,7 +326,7 @@ export default function HomePage() {
                 return (
                   <div
                     key={index}
-                    className="absolute transition-all duration-1000 ease-out"
+                    className="absolute z-10 transition-all duration-1000 ease-out"
                     style={{
                       transform: animationStarted
                         ? `translate(${x}px, ${y}px) scale(1)`
@@ -308,28 +335,42 @@ export default function HomePage() {
                       transitionDelay: `${index * 100}ms`,
                     }}
                   >
-                    <div className="bg-white border-2 border-brand-teal-300 rounded-full p-4 hover:border-brand-teal-500 transition-all hover:scale-105 cursor-pointer shadow-lg w-32 h-32">
-                      <div className="flex flex-col items-center justify-center gap-1 h-full">
-                        <div className="w-10 h-10 rounded-full bg-brand-teal-50 flex items-center justify-center">
-                          <Icon className="w-6 h-6 text-brand-teal-600" />
+                    <div className="flex flex-col items-center">
+                      <div className="bg-white p-1.5 rounded-full shadow-xl transition-all hover:scale-110 hover:shadow-2xl cursor-pointer w-20 h-20 lg:w-24 lg:h-24">
+                        <div className="w-full h-full rounded-full overflow-hidden">
+                          <img 
+                            src={professional.img} 
+                            alt={professional.label}
+                            className="w-full h-full object-cover object-center"
+                          />
                         </div>
-                        <p className="text-xs text-gray-700 font-semibold text-center leading-tight">{professional.label}</p>
                       </div>
+                      <span className="text-xs font-semibold text-gray-700 mt-2 whitespace-nowrap">{professional.label}</span>
                     </div>
                   </div>
                 )
               })}
 
-              {/* Center Circle with Logo */}
+              {/* Center Circle with Photo */}
               <div 
-                className="absolute bg-white border-4 border-brand-teal-400 rounded-full w-32 h-32 flex items-center justify-center shadow-2xl transition-all duration-1000 p-4"
+                className="absolute z-20 bg-white rounded-full shadow-2xl p-2 transition-all duration-1000 w-28 h-28 lg:w-36 lg:h-36"
                 style={{
                   opacity: animationStarted ? 1 : 0,
                   transform: animationStarted ? 'scale(1)' : 'scale(0)',
-                  transitionDelay: '1000ms',
+                  transitionDelay: '600ms',
                 }}
               >
-                <img src="/images/logo.png" alt="Spotlight Circles" className="w-full h-full" />
+                <div className="w-full h-full rounded-full overflow-hidden relative border-4 border-white">
+                  <img 
+                    src="/landing-page/images/Center photo.png" 
+                    alt="Host" 
+                    className="w-full h-full object-cover object-center"
+                  />
+                  {/* Live Indicator */}
+                  <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                </div>
+                {/* Pulse Ring behind center */}
+                <div className="absolute inset-0 rounded-full border-2 border-brand-teal-200 animate-ping opacity-20 -z-10"></div>
               </div>
             </div>
           </div>
