@@ -86,166 +86,129 @@ export default function MarketingContent({ profile, profileUrl }: MarketingConte
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Website Link Card */}
-        <Card className="border-2 border-orange-200 bg-orange-50/30">
-          <div className="absolute top-4 right-4">
-            <span className="bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded">Recommended</span>
+      {/* Why Share Referrals Section */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Why Share Referrals?</h2>
+        <div className="space-y-3">
+          <div className="flex items-start gap-3">
+            <Check className="h-5 w-5 text-brand-teal-600 flex-shrink-0 mt-1" />
+            <p className="text-gray-700">Build even stronger client relationships</p>
           </div>
-          <CardHeader>
-            <CardTitle>Add a Link to Your Website</CardTitle>
-            <CardDescription>
-              Works with any website • No technical setup
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 bg-white rounded-lg border border-gray-200">
-              <p className="text-sm text-gray-600 mb-2 font-medium">Your Link:</p>
-              <code className="block text-sm bg-gray-50 px-3 py-2 rounded border border-gray-300 overflow-x-auto">
-                {profileUrl}
-              </code>
-            </div>
-            <ul className="space-y-2 text-sm text-gray-700">
-              <li className="flex items-start gap-2">
-                <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                <span>Suggested placements: top bar navigation, homepage section, footer</span>
-              </li>
-            </ul>
-            <Button
-              className="w-full bg-brand-teal-600 hover:bg-brand-teal-700"
-              onClick={handleCopyLink}
-            >
-              {copied ? (
-                <>
-                  <Check className="h-4 w-4 mr-2" />
-                  Copied!
-                </>
+          <div className="flex items-start gap-3">
+            <Check className="h-5 w-5 text-brand-teal-600 flex-shrink-0 mt-1" />
+            <p className="text-gray-700">Receive more introductions over time</p>
+          </div>
+          <div className="flex items-start gap-3">
+            <Check className="h-5 w-5 text-brand-teal-600 flex-shrink-0 mt-1" />
+            <p className="text-gray-700">Multiply referrals without ads or pressure</p>
+          </div>
+        </div>
+      </div>
+
+      {/* How to Share in 3 Simple Steps */}
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">How to Share in 3 Simple Steps</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          {/* Step 1: Place a Poster */}
+          <Card className="bg-gradient-to-br from-gray-50 to-white">
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-3">
+                <div className="w-16 h-16 rounded-full bg-brand-teal-100 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-brand-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                  </svg>
+                </div>
+              </div>
+              <CardTitle className="text-lg text-brand-teal-700">Step 1</CardTitle>
+              <p className="text-base font-semibold text-gray-900">Place a Poster<br />with QR Code</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-gray-600 text-center">
+                Print a ready-made poster for your lobby or waiting area so clients can easily find your trusted partners.
+              </p>
+              <Link href="/dashboard/poster" className="block">
+                <Button className="w-full bg-brand-teal-600 hover:bg-brand-teal-700 mt-4 min-h-[44px]">
+                  <Download className="h-4 w-4 mr-2" />
+                  Generate Poster
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Step 2: Add QR Code to Marketing */}
+          <Card className="bg-gradient-to-br from-gray-50 to-white">
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-3">
+                <div className="w-16 h-16 rounded-full bg-brand-teal-100 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-brand-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                  </svg>
+                </div>
+              </div>
+              <CardTitle className="text-lg text-brand-teal-700">Step 2</CardTitle>
+              <p className="text-base font-semibold text-gray-900">Add QR Code<br />to Marketing</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-gray-600 text-center">
+                Include this QR code in your emails, business cards, and advertising to link directly to trusted partners.
+              </p>
+              {profile.qrCodeUrl ? (
+                <a
+                  href={profile.qrCodeUrl}
+                  download={`${profile.referralSlug}-qr-code.png`}
+                  className="block w-full"
+                >
+                  <Button className="w-full bg-brand-teal-600 hover:bg-brand-teal-700 mt-4 min-h-[44px]">
+                    <Download className="h-4 w-4 mr-2" />
+                    Copy QR Code
+                  </Button>
+                </a>
               ) : (
-                <>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copy Link
-                </>
+                <Button className="w-full bg-gray-400 mt-4 min-h-[44px]" disabled>
+                  QR Code Unavailable
+                </Button>
               )}
-            </Button>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Embed Code Card */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="bg-gray-200 text-gray-700 text-xs font-semibold px-2 py-1 rounded">Advanced</span>
-            </div>
-            <CardTitle>Embed on a Page</CardTitle>
-            <CardDescription>
-              Embed Your Trusted Partners List
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-gray-600">
-              Adds your Trusted Partners directly into an existing page.
-            </p>
-            <ul className="space-y-2 text-sm text-gray-700">
-              <li className="flex items-start gap-2">
-                <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                <span>Looks native</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                <span>Updates automatically</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                <span>White-label option</span>
-              </li>
-            </ul>
-            <Button 
-              variant="outline" 
-              className="w-full"
-              onClick={handleCopyEmbed}
-            >
-              <Copy className="h-4 w-4 mr-2" />
-              {embedCopied ? "Copied!" : "Copy Embed Code"}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* QR Code Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Use a QR Code</CardTitle>
-            <CardDescription>
-              Share in-office or print
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {profile.qrCodeUrl ? (
-              <>
-                <div className="flex justify-center bg-white p-4 rounded-lg border-2 border-gray-200">
-                  <div className="relative w-40 h-40">
-                    <Image
-                      src={profile.qrCodeUrl}
-                      alt="QR Code"
-                      width={160}
-                      height={160}
-                      className="w-full h-full"
-                    />
-                  </div>
+          {/* Step 3: Share Your Personal Link */}
+          <Card className="bg-gradient-to-br from-gray-50 to-white">
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-3">
+                <div className="w-16 h-16 rounded-full bg-brand-teal-100 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-brand-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
                 </div>
-                <ul className="space-y-2 text-sm text-gray-700">
-                  <li className="flex items-center gap-2">
-                    <span>• Waiting room poster</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span>• Front desk signage</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span>• Printed materials</span>
-                  </li>
-                </ul>
-                <div className="space-y-2">
-                  <a
-                    href={profile.qrCodeUrl}
-                    download={`${profile.referralSlug}-qr-code.png`}
-                    className="w-full"
-                  >
-                    <Button className="w-full bg-brand-teal-600 hover:bg-brand-teal-700">
-                      <Download className="h-4 w-4 mr-2" />
-                      Generate QR Code
-                    </Button>
-                  </a>
-                </div>
-              </>
-            ) : (
-              <p className="text-gray-500 text-center py-8">QR code not available</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Create Poster Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Create a Poster</CardTitle>
-            <CardDescription>
-              For your waiting room lobby.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-gray-700">
-              A poster is a great way to provide value to your clients while they wait.
-            </p>
-            <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-center h-32">
-              <p className="text-gray-400 text-sm">Poster Preview</p>
-            </div>
-            <Link href="/dashboard/poster">
-              <Button className="w-full bg-brand-teal-600 hover:bg-brand-teal-700">
-                Click Here to Create
+              </div>
+              <CardTitle className="text-lg text-brand-teal-700">Step 3</CardTitle>
+              <p className="text-base font-semibold text-gray-900">Share Your<br />Personal Link</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-gray-600 text-center">
+                This link directs clients online to your curated, trusted referral partners page.
+              </p>
+              <Button
+                className="w-full bg-brand-teal-600 hover:bg-brand-teal-700 mt-4 min-h-[44px]"
+                onClick={handleCopyLink}
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-4 w-4 mr-2" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Referral Link
+                  </>
+                )}
               </Button>
-            </Link>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Why this step now appears at top */}
+        </div>
       </div>
 
       {/* Share Link Section - Moved Below */}
@@ -311,28 +274,6 @@ export default function MarketingContent({ profile, profileUrl }: MarketingConte
             </div>
           </CardContent>
         </Card>
-
-      {/* Stats Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Link Performance</CardTitle>
-          <CardDescription>
-            Track how many people have viewed your profile
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between p-6 bg-brand-teal-50 rounded-lg">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Total Profile Views</p>
-              <p className="text-4xl font-bold text-brand-teal-600">{profile.linkClicks || 0}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-600">Link Clicks</p>
-              <p className="text-2xl font-semibold text-gray-900">{profile.linkClicks || 0}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Tips Card */}
       <Card>
