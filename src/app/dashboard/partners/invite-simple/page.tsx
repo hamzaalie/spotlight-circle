@@ -32,7 +32,7 @@ export default function SimpleInvitePartnerPage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("/api/user/profile")
+        const res = await fetch("/api/profile")
         if (res.ok) {
           const data = await res.json()
           setSenderProfile(data.profile)
@@ -46,34 +46,30 @@ export default function SimpleInvitePartnerPage() {
 
   // Generate email template when moving to step 2
   useEffect(() => {
-    if (step === 2) {
-      const senderName = senderProfile 
-        ? `${senderProfile.firstName} ${senderProfile.lastName}` 
-        : ''
-      const companyName = senderProfile?.companyName || ''
+    if (step === 2 && senderProfile) {
+      const senderName = `${senderProfile.firstName || ''} ${senderProfile.lastName || ''}`.trim()
+      const senderFirstName = senderProfile.firstName || 'there'
+      const senderProfession = senderProfile.profession || senderProfile.companyName || 'my practice'
       
       const defaultSubject = `Join my trusted referral circle on Spotlight Circles`
       const defaultBody = `Hi ${formData.firstName},
 
-I'm reaching out because I frequently have clients asking for referrals I trust—and you're someone I'm always comfortable recommending.
+It's ${senderFirstName}, from ${senderProfession}. Clients often ask me for referrals I trust—and you're someone I'm always comfortable recommending.
 
-I've recently joined a private referral platform called Spotlight Circles, designed for trusted, non-competing professionals to make client introductions easier and more transparent.
+I've joined Spotlight Circles, a private referral platform for trusted, non-competing professionals. It simply formalizes the kind of referrals we already give—no ads, no selling, just trusted introductions.
 
-One of the reasons this resonated with me is that referrals consistently work better than advertising—they start with trust, convert faster, and avoid the cost and uncertainty of ads.
+I'd like to include you in my personal referral circle.
 
-Spotlight Circles allows me to share a short list of professionals I genuinely trust with my clients and receive referrals back in a natural way—without advertising or selling.
+You can learn more here:
+www.spotlightcircles.com
 
-I'd like to include you in my trusted referral circle.
+To accept my invitation:
+[link]
 
-If you're open to taking a look, you can learn more here: www.SpotlightCircles.com
-
-To accept my invitation to join my trusted circle of referral partners, click [link]
-
-No obligation—just a simple way to formalize referrals we already give.
+No obligation—just an easy way to share and receive referrals.
 
 Best,
-${senderName}
-${companyName}`.trim()
+${senderName || 'Your colleague'}`.trim()
 
       setEmailTemplate({
         subject: defaultSubject,
@@ -95,6 +91,12 @@ ${companyName}`.trim()
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(formData.email)) {
       setError("Please enter a valid email address")
+      return
+    }
+
+    // Check if profile is loaded
+    if (!senderProfile) {
+      setError("Loading your profile... Please try again in a moment.")
       return
     }
 

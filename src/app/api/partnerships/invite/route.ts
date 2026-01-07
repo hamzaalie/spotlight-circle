@@ -75,26 +75,32 @@ export async function POST(req: NextRequest) {
         to: email,
         subject: `${senderProfile.firstName} ${senderProfile.lastName} invited you to join Spotlight Circle`,
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #7c3aed;">You're Invited to Spotlight Circle!</h2>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; line-height: 1.6;">
             <p>Hi there,</p>
-            <p><strong>${senderProfile.firstName} ${senderProfile.lastName}</strong> (${senderProfile.profession}) wants to partner with you on Spotlight Circle - a professional referral network.</p>
             
-            ${notes ? `<p style="background: #f3f4f6; padding: 15px; border-radius: 8px; font-style: italic;">"${notes}"</p>` : ''}
+            <p>It's ${senderProfile.firstName}, from ${senderProfile.profession}. Clients often ask me for referrals I trust—and you're someone I'm always comfortable recommending.</p>
             
-            <p><strong>Category:</strong> ${category}</p>
+            <p>I've joined Spotlight Circles, a private referral platform for trusted, non-competing professionals. It simply formalizes the kind of referrals we already give—no ads, no selling, just trusted introductions.</p>
             
-            <p>Spotlight Circle helps professionals like you exchange quality referrals and grow your business together.</p>
+            <p>I'd like to include you in my personal referral circle.</p>
             
-            <p><strong>Create your free account to accept this invitation:</strong></p>
+            <p><strong>You can learn more here:</strong><br/>
+            <a href="https://www.spotlightcircles.com" style="color: #7c3aed;">www.spotlightcircles.com</a></p>
+            
+            <p><strong>To accept my invitation:</strong></p>
             <p>
               <a href="${process.env.NEXTAUTH_URL}/auth/signup?email=${encodeURIComponent(email)}&invited_by=${senderProfile.userId}" style="background: #7c3aed; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-                Join Spotlight Circle
+                Accept Invitation
               </a>
             </p>
             
-            <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-              Once you create your account and complete your profile, you'll be able to connect with ${senderProfile.firstName} and start exchanging referrals.
+            <p>No obligation—just an easy way to share and receive referrals.</p>
+            
+            <p>Best,<br/>
+            ${senderProfile.firstName} ${senderProfile.lastName}</p>
+            
+            <p style="color: #6b7280; font-size: 12px; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 15px;">
+              — Sent via Spotlight Circles
             </p>
           </div>
         `,
@@ -152,23 +158,34 @@ export async function POST(req: NextRequest) {
           if (recipientUser.profile) {
             await sendEmail({
               to: email,
-              subject: `${senderProfile.firstName} ${senderProfile.lastName} wants to partner with you!`,
+              subject: `${senderProfile.firstName} ${senderProfile.lastName} invited you to join their referral circle`,
               html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                  <h2 style="color: #7c3aed;">Partnership Invitation</h2>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; line-height: 1.6;">
                   <p>Hi ${recipientUser.profile.firstName},</p>
-                  <p><strong>${senderProfile.firstName} ${senderProfile.lastName}</strong> (${senderProfile.profession}) has invited you to join their referral network on Spotlight Circle!</p>
                   
-                  ${notes ? `<p style="background: #f3f4f6; padding: 15px; border-radius: 8px; font-style: italic;">"${notes}"</p>` : ''}
+                  <p>It's ${senderProfile.firstName}, from ${senderProfile.profession}. Clients often ask me for referrals I trust—and you're someone I'm always comfortable recommending.</p>
                   
-                  <p style="margin: 30px 0;">
+                  <p>I've joined Spotlight Circles, a private referral platform for trusted, non-competing professionals. It simply formalizes the kind of referrals we already give—no ads, no selling, just trusted introductions.</p>
+                  
+                  <p>I'd like to include you in my personal referral circle.</p>
+                  
+                  <p><strong>You can learn more here:</strong><br/>
+                  <a href="https://www.spotlightcircles.com" style="color: #7c3aed;">www.spotlightcircles.com</a></p>
+                  
+                  <p><strong>To accept my invitation:</strong></p>
+                  <p style="margin: 20px 0;">
                     <a href="${process.env.NEXTAUTH_URL}/invite/${partnership.id}" style="background: #7c3aed; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-                      View Invitation
+                      Accept Invitation
                     </a>
                   </p>
                   
-                  <p style="color: #6b7280; font-size: 14px;">
-                    Category: ${category}
+                  <p>No obligation—just an easy way to share and receive referrals.</p>
+                  
+                  <p>Best,<br/>
+                  ${senderProfile.firstName} ${senderProfile.lastName}</p>
+                  
+                  <p style="color: #6b7280; font-size: 12px; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 15px;">
+                    — Sent via Spotlight Circles
                   </p>
                 </div>
               `,
@@ -195,26 +212,34 @@ export async function POST(req: NextRequest) {
       if (recipientUser.profile) {
         await sendEmail({
           to: email,
-          subject: `${senderProfile.firstName} ${senderProfile.lastName} wants to partner with you!`,
+          subject: `${senderProfile.firstName} ${senderProfile.lastName} invited you to join their referral circle`,
           html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #7c3aed;">Partnership Invitation</h2>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; line-height: 1.6;">
               <p>Hi ${recipientUser.profile.firstName},</p>
-              <p><strong>${senderProfile.firstName} ${senderProfile.lastName}</strong> (${senderProfile.profession}) has invited you to join their referral network on Spotlight Circle!</p>
               
-              ${notes ? `<p style="background: #f3f4f6; padding: 15px; border-radius: 8px; font-style: italic;">"${notes}"</p>` : ''}
+              <p>It's ${senderProfile.firstName}, from ${senderProfile.profession}. Clients often ask me for referrals I trust—and you're someone I'm always comfortable recommending.</p>
               
-              <p><strong>Category:</strong> ${category}</p>
+              <p>I've joined Spotlight Circles, a private referral platform for trusted, non-competing professionals. It simply formalizes the kind of referrals we already give—no ads, no selling, just trusted introductions.</p>
               
-              <p>Log in to your account to accept or decline this invitation:</p>
+              <p>I'd like to include you in my personal referral circle.</p>
+              
+              <p><strong>You can learn more here:</strong><br/>
+              <a href="https://www.spotlightcircles.com" style="color: #7c3aed;">www.spotlightcircles.com</a></p>
+              
+              <p><strong>To accept my invitation:</strong></p>
               <p>
                 <a href="${process.env.NEXTAUTH_URL}/dashboard/partners" style="background: #7c3aed; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-                  View Invitation
+                  Accept Invitation
                 </a>
               </p>
               
-              <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-                Building your referral network helps you exchange quality leads and grow your business together.
+              <p>No obligation—just an easy way to share and receive referrals.</p>
+              
+              <p>Best,<br/>
+              ${senderProfile.firstName} ${senderProfile.lastName}</p>
+              
+              <p style="color: #6b7280; font-size: 12px; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 15px;">
+                — Sent via Spotlight Circles
               </p>
             </div>
           `,
