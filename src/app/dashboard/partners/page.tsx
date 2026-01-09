@@ -50,9 +50,18 @@ export default async function PartnersPage() {
   const pendingInvitations = receivedPartnerships.filter((p) => p.status === "PENDING")
   const sentInvitations = initiatedPartnerships.filter((p) => p.status === "PENDING")
 
+  // Count only active partners with valid profiles
+  const activePartnersWithProfile = activePartners.filter((partnership) => {
+    const isInitiator = partnership.initiatorId === session.user.id
+    const partnerData = isInitiator 
+      ? (partnership as any).receiver 
+      : (partnership as any).initiator
+    return partnerData?.profile
+  })
+
   const stats = {
-    total: activePartners.length,
-    pending: pendingInvitations.length,
+    total: activePartnersWithProfile.length,
+    pending: sentInvitations.length, // Show sent invitations as "Pending Invitations"
     sent: sentInvitations.length,
     categories: new Set(
       activePartners.map((p) => p.category).filter(Boolean)
