@@ -46,9 +46,28 @@ export default async function PartnersPage() {
 
   // Combine and deduplicate partners
   const allPartnerships = [...initiatedPartnerships, ...receivedPartnerships]
-  const activePartners = allPartnerships.filter((p) => p.status === "ACCEPTED")
-  const pendingInvitations = receivedPartnerships.filter((p) => p.status === "PENDING")
-  const sentInvitations = initiatedPartnerships.filter((p) => p.status === "PENDING")
+  // Filter out any self-partnerships (where user is both initiator and receiver)
+  const activePartners = allPartnerships.filter((p) => {
+    // Exclude self-partnerships
+    if (p.initiatorId === session.user.id && p.receiverId === session.user.id) {
+      return false
+    }
+    return p.status === "ACCEPTED"
+  })
+  const pendingInvitations = receivedPartnerships.filter((p) => {
+    // Exclude self-partnerships
+    if (p.initiatorId === session.user.id && p.receiverId === session.user.id) {
+      return false
+    }
+    return p.status === "PENDING"
+  })
+  const sentInvitations = initiatedPartnerships.filter((p) => {
+    // Exclude self-partnerships
+    if (p.initiatorId === session.user.id && p.receiverId === session.user.id) {
+      return false
+    }
+    return p.status === "PENDING"
+  })
 
   // Count only active partners with valid profiles
   const activePartnersWithProfile = activePartners.filter((partnership) => {

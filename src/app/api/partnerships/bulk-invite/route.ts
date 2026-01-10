@@ -22,6 +22,14 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Prevent self-invitation
+    if (session.user.email?.toLowerCase() === email.toLowerCase()) {
+      return NextResponse.json(
+        { error: "You cannot invite yourself as a partner" },
+        { status: 400 }
+      )
+    }
+
     // Check if active partnership already exists (exclude declined ones)
     const existingPartnership = await prisma.partnership.findFirst({
       where: {

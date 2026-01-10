@@ -37,6 +37,14 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Prevent self-invitation
+    if (session.user.email?.toLowerCase() === email.toLowerCase()) {
+      return NextResponse.json(
+        { error: "You cannot invite yourself as a partner" },
+        { status: 400 }
+      )
+    }
+
     // Check if recipient user exists
     const recipientUser = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },

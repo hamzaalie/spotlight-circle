@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { SharePartnersActions } from "@/components/dashboard/SharePartnersActions"
 import { InviteProfessionalsList } from "@/components/dashboard/InviteProfessionalsList"
+import { InviteProfessionalTab } from "@/components/public/InviteProfessionalTab"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -168,27 +169,7 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Invite box (mobile first) */}
         <div className="order-1">
-          <Card className="bg-gradient-to-br from-brand-teal-50 to-blue-50">
-            <CardContent className="p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Invite a Trusted Professional</h2>
-              <p className="text-gray-700 mb-4">
-                Know a great CPA, attorney, realtor, or contractor? Invite them to your Circle!
-              </p>
-              <div className="flex gap-3">
-                <input
-                  type="email"
-                  placeholder="email@example.com"
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-teal-500 focus:border-transparent"
-                />
-                <Button className="bg-brand-teal-600 hover:bg-brand-teal-700" asChild>
-                  <a href="/dashboard/partners/invite-simple">Send Invite</a>
-                </Button>
-              </div>
-              <a href="/dashboard/partners" className="inline-block mt-3 text-sm text-brand-teal-600 hover:text-brand-teal-700 font-medium">
-                See Your Invites →
-              </a>
-            </CardContent>
-          </Card>
+          <InviteProfessionalTab />
         </div>
 
         {/* Right: Analytics cards arranged 2x2 */}

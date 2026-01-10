@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,6 +14,7 @@ export function InviteProfessionalTab() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [userProfile, setUserProfile] = useState<{ firstName: string; lastName: string; profession: string } | null>(null)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -24,6 +25,22 @@ export function InviteProfessionalTab() {
     body: "",
   })
 
+  // Fetch user profile on component mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("/api/profile")
+        if (res.ok) {
+          const data = await res.json()
+          setUserProfile(data.profile)
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile:", err)
+      }
+    }
+    fetchProfile()
+  }, [])
+
   const handleStep1Submit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.firstName || !formData.lastName || !formData.email) {
@@ -31,10 +48,14 @@ export function InviteProfessionalTab() {
       return
     }
     setError("")
-    // Generate default email template
+    
+    // Generate default email template with user's information
+    const senderName = userProfile ? userProfile.firstName : "I"
+    const profession = userProfile?.profession || "my profession"
+    
     setEmailTemplate({
-      subject: `Let's connect on Spotlight Circles`,
-      body: `Hi ${formData.firstName},\n\nI'd love to connect with you on Spotlight Circles to build a mutually beneficial referral partnership.\n\nLooking forward to connecting!`,
+      subject: `Join my professional network on Spotlight Circles`,
+      body: `Hi ${formData.firstName},\n\nIt's ${senderName}, from ${profession}. Clients often ask me for referrals I trust—and you're someone I'm always comfortable recommending.\n\nI've joined Spotlight Circles, a private referral platform for trusted, non-competing professionals. It simply formalizes the kind of referrals we already give—no ads, no selling, just trusted introductions.\n\nI'd like to include you in my personal referral circle.\n\nYou can learn more here:\nwww.spotlightcircles.com\n\nTo accept my invitation:\n[link]\n\nNo obligation—just an easy way to share and receive referrals.\n\nBest,\n${userProfile ? `${userProfile.firstName} ${userProfile.lastName}` : ""}`,
     })
     setStep(2)
   }

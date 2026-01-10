@@ -23,6 +23,14 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Prevent self-invitation
+    if (receiverUserId === session.user.id) {
+      return NextResponse.json(
+        { error: "You cannot invite yourself as a partner" },
+        { status: 400 }
+      )
+    }
+
     // Check if receiver exists
     const receiver = await prisma.user.findUnique({
       where: { id: receiverUserId },
