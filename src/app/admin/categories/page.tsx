@@ -5,7 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { Plus, Edit, Trash2, ArrowUp, ArrowDown } from "lucide-react"
+import { Plus, Edit, Trash2, Tag } from "lucide-react"
+import { AdminHeader } from "@/components/admin/AdminHeader"
+import { StatCard } from "@/components/admin/StatCard"
 
 export default async function AdminCategoriesPage() {
   const session = await auth()
@@ -18,21 +20,44 @@ export default async function AdminCategoriesPage() {
     orderBy: { order: 'asc' },
   })
 
+  const activeCount = categories.filter(c => c.isActive).length
+  const inactiveCount = categories.length - activeCount
+
   return (
-    <div className="space-y-6">
+    <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Profession Categories</h1>
-          <p className="text-gray-600 mt-1">
-            Manage profession categories for user profiles
-          </p>
-        </div>
+        <AdminHeader
+          title="Profession Categories"
+          description="Manage profession categories for user profiles"
+        />
         <Link href="/admin/categories/new">
-          <Button className="bg-brand-gold-400 hover:bg-brand-gold-500">
+          <Button className="bg-brand-teal-500 hover:bg-brand-teal-600">
             <Plus className="mr-2 h-4 w-4" />
             Add Category
           </Button>
         </Link>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+        <StatCard
+          title="Total Categories"
+          value={categories.length}
+          icon={Tag}
+          colorClass="bg-brand-teal-100 text-brand-teal-600"
+        />
+        <StatCard
+          title="Active"
+          value={activeCount}
+          icon={Tag}
+          colorClass="bg-green-100 text-green-600"
+        />
+        <StatCard
+          title="Inactive"
+          value={inactiveCount}
+          icon={Tag}
+          colorClass="bg-gray-100 text-gray-600"
+        />
       </div>
 
       <Card>
@@ -43,81 +68,73 @@ export default async function AdminCategoriesPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            {categories.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                No categories yet. Click "Add Category" to create one.
-              </div>
-            ) : (
-              <div className="divide-y">
-                {categories.map((category: any, index: number) => (
-                  <div
-                    key={category.id}
-                    className="flex items-center justify-between py-4 hover:bg-gray-50 px-4 rounded-lg transition-colors"
-                  >
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className="flex flex-col items-center gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 w-6 p-0"
-                          disabled={index === 0}
-                        >
-                          <ArrowUp className="h-3 w-3" />
-                        </Button>
-                        <span className="text-xs text-gray-500 font-mono w-8 text-center">
-                          #{category.order}
+          {categories.length === 0 ? (
+            <div className="text-center py-12">
+              <Tag className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-1">No categories yet</h3>
+              <p className="text-gray-600 mb-4">Click "Add Category" to create your first category</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Order</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Name</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Description</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Created</th>
+                    <th className="text-right py-3 px-4 font-semibold text-gray-700">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {categories.map((category: any) => (
+                    <tr key={category.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="py-3 px-4">
+                        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-sm font-medium text-gray-700">
+                          {category.order}
                         </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 w-6 p-0"
-                          disabled={index === categories.length - 1}
-                        >
-                          <ArrowDown className="h-3 w-3" />
-                        </Button>
-                      </div>
-
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-semibold text-lg">{category.name}</h3>
-                          {!category.isActive && (
-                            <Badge variant="secondary">Inactive</Badge>
-                          )}
-                        </div>
-                        {category.description && (
-                          <p className="text-sm text-gray-600 mt-1">
-                            {category.description}
-                          </p>
-                        )}
-                        <p className="text-xs text-gray-400 mt-1">
-                          Created: {new Date(category.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="py-3 px-4">
+                        <p className="font-semibold text-gray-900">{category.name}</p>
+                      </td>
+                      <td className="py-3 px-4">
+                        <p className="text-sm text-gray-600 max-w-xs truncate">
+                          {category.description || "—"}
                         </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Link href={`/admin/categories/${category.id}/edit`}>
-                        <Button variant="outline" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <form action={`/api/admin/categories/${category.id}`} method="POST">
-                        <input type="hidden" name="_method" value="DELETE" />
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </form>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                      </td>
+                      <td className="py-3 px-4">
+                        {category.isActive ? (
+                          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Active</Badge>
+                        ) : (
+                          <Badge variant="secondary">Inactive</Badge>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 text-sm text-gray-600">
+                        {new Date(category.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link href={`/admin/categories/${category.id}/edit`}>
+                            <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
 

@@ -1,144 +1,88 @@
-"use client"
-
-import { useState, useEffect } from "react"
+import { auth } from "@/auth"
+import { prisma } from "@/lib/prisma"
+import { redirect } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Download, Mail, Calendar, TrendingUp } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { AdminHeader } from "@/components/admin/AdminHeader"
+import { StatCard } from "@/components/admin/StatCard"
+import { Mail, Calendar, TrendingUp, Download } from "lucide-react"
+import Link from "next/link"
 
-interface WaitlistEntry {
-  id: string
-  email: string
-  source: string
-  createdAt: string
-  convertedAt: string | null
-}
+export default async function WaitlistPage() {
+  const session = await auth()
 
-export default function WaitlistPage() {
-  const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([])
-  const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState({ total: 0, today: 0, thisWeek: 0 })
-
-  useEffect(() => {
-    fetchWaitlist()
-  }, [])
-
-  const fetchWaitlist = async () => {
-    try {
-      const response = await fetch("/api/waitlist")
-      const data = await response.json()
-      
-      if (data.success) {
-        setWaitlist(data.waitlist)
-        calculateStats(data.waitlist)
-      }
-    } catch (error) {
-      console.error("Failed to fetch waitlist:", error)
-    } finally {
-      setLoading(false)
-    }
+  if (!session?.user || session.user.role !== "ADMIN") {
+    redirect("/dashboard")
   }
 
-  const calculateStats = (entries: WaitlistEntry[]) => {
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+  // Fetch waitlist entries
+  const waitlist = await prisma.waitlist.findMany({
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      email: true,
+      source: true,
+      createdAt: true,
+      convertedAt: true,
+    },
+  })
 
-    const todayCount = entries.filter(e => new Date(e.createdAt) >= today).length
-    const weekCount = entries.filter(e => new Date(e.createdAt) >= weekAgo).length
+  // Calculate stats
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
 
-    setStats({
-      total: entries.length,
-      today: todayCount,
-      thisWeek: weekCount,
-    })
-  }
-
-  const exportToCSV = () => {
-    const headers = ["Email", "Source", "Signed Up", "Converted"]
-    const rows = waitlist.map(entry => [
-      entry.email,
-      entry.source,
-      new Date(entry.createdAt).toLocaleDateString(),
-      entry.convertedAt ? "Yes" : "No"
-    ])
-
-    const csv = [
-      headers.join(","),
-      ...rows.map(row => row.join(","))
-    ].join("\n")
-
-    const blob = new Blob([csv], { type: "text/csv" })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `waitlist-${new Date().toISOString().split("T")[0]}.csv`
-    a.click()
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-teal-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading waitlist...</p>
-        </div>
-      </div>
-    )
-  }
+  const todayCount = waitlist.filter(e => new Date(e.createdAt) >= today).length
+  const weekCount = waitlist.filter(e => new Date(e.createdAt) >= weekAgo).length
+  const convertedCount = waitlist.filter(e => e.convertedAt).length
 
   return (
-    <div className="space-y-6">
+    <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Waitlist Signups</h1>
-          <p className="text-gray-600 mt-1">Manage early access requests from your landing page</p>
-        </div>
-        <Button onClick={exportToCSV} className="bg-brand-teal-500 hover:bg-brand-teal-600">
-          <Download className="w-4 h-4 mr-2" />
-          Export CSV
-        </Button>
+        <AdminHeader
+          title="Waitlist Signups"
+          description="Manage early access requests from your landing page"
+        />
+        {/* Export button removed as it needs client-side functionality */}
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Signups</CardTitle>
-            <Mail className="w-4 h-4 text-brand-teal-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-            <p className="text-xs text-gray-500 mt-1">All time</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">This Week</CardTitle>
-            <TrendingUp className="w-4 h-4 text-brand-gold-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">{stats.thisWeek}</div>
-            <p className="text-xs text-gray-500 mt-1">Last 7 days</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Today</CardTitle>
-            <Calendar className="w-4 h-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">{stats.today}</div>
-            <p className="text-xs text-gray-500 mt-1">Since midnight</p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-4">
+        <StatCard
+          title="Total Signups"
+          value={waitlist.length}
+          icon={Mail}
+          description="All time"
+          colorClass="bg-brand-teal-100 text-brand-teal-600"
+        />
+        <StatCard
+          title="This Week"
+          value={weekCount}
+          icon={TrendingUp}
+          description="Last 7 days"
+          colorClass="bg-brand-gold-100 text-brand-gold-600"
+        />
+        <StatCard
+          title="Today"
+          value={todayCount}
+          icon={Calendar}
+          description="Since midnight"
+          colorClass="bg-green-100 text-green-600"
+        />
+        <StatCard
+          title="Converted"
+          value={convertedCount}
+          icon={TrendingUp}
+          description="Signed up"
+          colorClass="bg-purple-100 text-purple-600"
+        />
       </div>
 
       {/* Waitlist Table */}
       <Card>
         <CardHeader>
-          <CardTitle>All Signups</CardTitle>
+          <CardTitle>All Signups ({waitlist.length})</CardTitle>
           <CardDescription>Complete list of waitlist entries</CardDescription>
         </CardHeader>
         <CardContent>
@@ -162,13 +106,15 @@ export default function WaitlistPage() {
                 <tbody>
                   {waitlist.map((entry) => (
                     <tr key={entry.id} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-3 px-4 text-gray-900">{entry.email}</td>
-                      <td className="py-3 px-4 text-gray-600">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {entry.source}
-                        </span>
+                      <td className="py-3 px-4">
+                        <p className="font-medium text-gray-900">{entry.email}</p>
                       </td>
-                      <td className="py-3 px-4 text-gray-600">
+                      <td className="py-3 px-4">
+                        <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+                          {entry.source}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-4 text-sm text-gray-600">
                         {new Date(entry.createdAt).toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "short",
@@ -177,13 +123,13 @@ export default function WaitlistPage() {
                       </td>
                       <td className="py-3 px-4">
                         {entry.convertedAt ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
                             Converted
-                          </span>
+                          </Badge>
                         ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          <Badge variant="secondary">
                             Waiting
-                          </span>
+                          </Badge>
                         )}
                       </td>
                     </tr>

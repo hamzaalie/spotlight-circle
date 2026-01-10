@@ -37,16 +37,19 @@ export default async function DashboardLayout({
     redirect("/onboarding")
   }
 
-  // Check if user has active subscription
-  const subscription = await prisma.subscription.findFirst({
-    where: {
-      userId: session.user.id,
-      status: { in: ["ACTIVE", "TRIALING"] },
-    },
-  })
+  // Admins bypass subscription check
+  if (user.role !== 'ADMIN') {
+    // Check if user has active subscription
+    const subscription = await prisma.subscription.findFirst({
+      where: {
+        userId: session.user.id,
+        status: { in: ["ACTIVE", "TRIALING"] },
+      },
+    })
 
-  if (!subscription) {
-    redirect("/payment/subscribe")
+    if (!subscription) {
+      redirect("/payment/subscribe")
+    }
   }
 
   // Get pending invitations count

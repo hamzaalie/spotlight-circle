@@ -49,11 +49,11 @@ export default async function AdminLayout({
       href: "/admin/categories",
       icon: Tag,
     },
-    {
-      name: "Waitlist",
-      href: "/admin/waitlist",
-      icon: Mail,
-    },
+    // {
+    //   name: "Waitlist",
+    //   href: "/admin/waitlist",
+    //   icon: Mail,
+    // },
     {
       name: "Analytics",
       href: "/admin/analytics",

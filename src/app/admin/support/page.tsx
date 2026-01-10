@@ -4,21 +4,15 @@ import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { User, Calendar, MessageSquare, ArrowLeft } from "lucide-react"
+import { AdminHeader } from "@/components/admin/AdminHeader"
+import { StatCard } from "@/components/admin/StatCard"
 
 export default async function AdminSupportPage() {
   const session = await auth()
 
-  if (!session?.user?.email) {
-    redirect("/auth/signin")
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  })
-
-  if (user?.role !== "ADMIN") {
+  if (!session?.user || session.user.role !== "ADMIN") {
     redirect("/dashboard")
   }
 
@@ -89,83 +83,46 @@ export default async function AdminSupportPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <Link
-              href="/admin"
-              className="mb-4 inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Admin Panel
-            </Link>
-            <h1 className="text-3xl font-bold text-gray-900">Support Tickets</h1>
-            <p className="mt-2 text-gray-600">Manage customer support requests</p>
-          </div>
-        </div>
+    <div className="p-8 space-y-6">
+      <AdminHeader
+        title="Support Tickets"
+        description="Manage customer support requests"
+      />
 
-        {/* Status Summary */}
-        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Open</p>
-                <p className="mt-2 text-3xl font-bold text-brand-teal-600">
-                  {statusCounts.OPEN}
-                </p>
-              </div>
-              <div className="rounded-full bg-brand-teal-100 p-3">
-                <MessageSquare className="h-6 w-6 text-brand-teal-600" />
-              </div>
-            </div>
-          </Card>
+      {/* Status Summary */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-4">
+        <StatCard
+          title="Open"
+          value={statusCounts.OPEN}
+          icon={MessageSquare}
+          colorClass="bg-blue-100 text-blue-600"
+        />
+        <StatCard
+          title="In Progress"
+          value={statusCounts.IN_PROGRESS}
+          icon={MessageSquare}
+          colorClass="bg-yellow-100 text-yellow-600"
+        />
+        <StatCard
+          title="Resolved"
+          value={statusCounts.RESOLVED}
+          icon={MessageSquare}
+          colorClass="bg-green-100 text-green-600"
+        />
+        <StatCard
+          title="Closed"
+          value={statusCounts.CLOSED}
+          icon={MessageSquare}
+          colorClass="bg-gray-100 text-gray-600"
+        />
+      </div>
 
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">In Progress</p>
-                <p className="mt-2 text-3xl font-bold text-yellow-600">
-                  {statusCounts.IN_PROGRESS}
-                </p>
-              </div>
-              <div className="rounded-full bg-yellow-100 p-3">
-                <MessageSquare className="h-6 w-6 text-yellow-600" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Resolved</p>
-                <p className="mt-2 text-3xl font-bold text-green-600">
-                  {statusCounts.RESOLVED}
-                </p>
-              </div>
-              <div className="rounded-full bg-green-100 p-3">
-                <MessageSquare className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Closed</p>
-                <p className="mt-2 text-3xl font-bold text-gray-600">
-                  {statusCounts.CLOSED}
-                </p>
-              </div>
-              <div className="rounded-full bg-gray-100 p-3">
-                <MessageSquare className="h-6 w-6 text-gray-600" />
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Tickets List */}
-        <Card>
+      {/* Tickets List */}
+      <Card>
+        <CardHeader>
+          <CardTitle>All Tickets ({tickets.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="border-b bg-gray-50">
@@ -265,8 +222,8 @@ export default async function AdminSupportPage() {
               </tbody>
             </table>
           </div>
-        </Card>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

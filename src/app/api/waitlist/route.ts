@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { auth } from "@/auth"
 
 // Helper function to add CORS headers
 function corsHeaders(origin: string | null) {
@@ -96,7 +97,16 @@ export async function GET(req: NextRequest) {
   const origin = req.headers.get('origin')
   
   try {
-    // TODO: Add authentication check for admin access
+    // Check authentication for admin access
+    const session = await auth()
+    
+    if (!session?.user || session.user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: "Unauthorized - Admin access required" },
+        { status: 401, headers: corsHeaders(origin) }
+      )
+    }
+
     const waitlist = await prisma.waitlist.findMany({
       orderBy: { createdAt: "desc" },
       select: {

@@ -51,10 +51,18 @@ function SignInPageContent({ router }: { router: ReturnType<typeof useRouter> })
         return
       }
 
+      // Fetch the session to check user role
+      const response = await fetch('/api/auth/session')
+      const session = await response.json()
+      
       // If there's an invite, redirect to the invite page
       if (inviteId) {
         router.push(`/invite/${inviteId}`)
+      } else if (session?.user?.role === 'ADMIN') {
+        // Redirect admins to admin panel
+        router.push("/admin")
       } else {
+        // Redirect regular users to dashboard
         router.push("/dashboard")
       }
       router.refresh()

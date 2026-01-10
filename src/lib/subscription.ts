@@ -9,6 +9,14 @@ export async function requireSubscription() {
     redirect("/auth/signin")
   }
 
+  // Admins bypass subscription check
+  if (session.user.role === 'ADMIN') {
+    const profile = await prisma.profile.findUnique({
+      where: { userId: session.user.id },
+    })
+    return { session, profile, subscription: null }
+  }
+
   // Check if user has completed profile
   const profile = await prisma.profile.findUnique({
     where: { userId: session.user.id },

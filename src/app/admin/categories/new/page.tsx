@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ArrowLeft } from "lucide-react"
 
 export default function NewCategoryPage() {
   const router = useRouter()
@@ -43,6 +44,7 @@ export default function NewCategoryPage() {
       }
 
       router.push("/admin/categories")
+      router.refresh()
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -51,14 +53,15 @@ export default function NewCategoryPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="p-8 max-w-3xl mx-auto space-y-6">
       <div>
         <Link href="/admin/categories">
           <Button variant="outline" size="sm" className="mb-4">
-            ← Back to Categories
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Categories
           </Button>
         </Link>
-        <h1 className="text-3xl font-bold">Add New Category</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Add New Category</h1>
         <p className="text-gray-600 mt-1">
           Create a new profession category
         </p>
@@ -142,7 +145,7 @@ export default function NewCategoryPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-brand-gold-400 hover:bg-brand-gold-500"
+                className="flex-1 bg-brand-teal-500 hover:bg-brand-teal-600"
               >
                 {loading ? "Creating..." : "Create Category"}
               </Button>
