@@ -106,6 +106,9 @@ model User {
   // Referral requests
   referralRequestsReceived ReferralRequest[] @relation("ProfileOwnerRequests")
   partnerReferralRequests  ReferralRequest[] @relation("PartnerRequests")
+  
+  // Print orders
+  printOrders   PrintOrder[]  @relation("UserPrintOrders")
 
   @@index([email])
   @@map("users")
@@ -503,4 +506,79 @@ model Waitlist {
   @@index([email])
   @@index([createdAt])
   @@map("waitlist")
+}
+
+enum PrintOrderStatus {
+  PENDING       // Order created but not yet sent to Artelo
+  PROCESSING    // Sent to Artelo, being processed
+  IN_PRODUCTION // Being printed/framed
+  SHIPPED       // Order shipped
+  DELIVERED     // Order delivered
+  CANCELLED     // Order cancelled
+  FAILED        // Order failed
+}
+
+model PrintOrder {
+  id                String           @id @default(cuid())
+  
+  // User who ordered
+  userId            String
+  user              User             @relation("UserPrintOrders", fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Order details
+  posterImageUrl    String           // URL to the generated poster image
+  size              String           // e.g., "18x24", "24x36"
+  frameStyle        String?          // e.g., "black_metal", "wood_natural", "none"
+  material          String?          // e.g., "premium_matte", "glossy"
+  quantity          Int              @default(1)
+  
+  // Pricing
+  unitPrice         Float            // Price per poster in cents
+  totalPrice        Float            // Total price in cents
+  shippingCost      Float?           // Shipping cost in cents
+  
+  // Artelo integration
+  arteloOrderId     String?          @unique // Artelo's order ID
+  arteloStatus      String?          // Status from Artelo
+  arteloResponse    Json?            // Full response from Artelo API
+  
+  // Payment
+  stripePaymentIntentId String?      @unique
+  paid              Boolean          @default(false)
+  paidAt            DateTime?
+  
+  // Shipping
+  shippingName      String
+  shippingAddress1  String
+  shippingAddress2  String?
+  shippingCity      String
+  shippingState     String
+  shippingZip       String
+  shippingCountry   String           @default("US")
+  shippingPhone     String?
+  
+  // Tracking
+  trackingNumber    String?
+  trackingUrl       String?
+  carrier           String?
+  
+  // Status
+  status            PrintOrderStatus @default(PENDING)
+  statusHistory     Json?            // Track status changes
+  
+  // Metadata
+  notes             String?          @db.Text
+  errorMessage      String?          @db.Text
+  
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  shippedAt         DateTime?
+  deliveredAt       DateTime?
+  cancelledAt       DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@index([arteloOrderId])
+  @@index([createdAt])
+  @@map("print_orders")
 }

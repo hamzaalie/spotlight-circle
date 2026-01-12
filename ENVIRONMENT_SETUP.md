@@ -408,6 +408,49 @@ Error: Invalid API key
 
 ---
 
+## �️ 7. Artelo Print Service (For Poster Printing) - OPTIONAL
+
+**Service: Artelo**
+
+Artelo provides professional poster printing and fulfillment services.
+
+1. **Sign up for Artelo account**
+   - Contact: https://www.artelo.io/contact
+   - Request API access and wholesale pricing
+   - Mention you're integrating with Spotlight Circles
+
+2. **Get API credentials**
+   - Once approved, you'll receive:
+     - API Key
+     - API URL (usually https://api.artelo.io/v1)
+     - Webhook secret for order updates
+
+3. **Add to `.env`:**
+   ```env
+   # Artelo Print Service
+   ARTELO_API_KEY="your-artelo-api-key"
+   ARTELO_API_URL="https://api.artelo.io/v1"
+   ARTELO_WEBHOOK_SECRET="your-webhook-secret"
+   ```
+
+4. **Configure webhook endpoint**
+   - After deployment, provide Artelo with your webhook URL:
+   - `https://your-domain.com/api/webhooks/artelo`
+   - They'll send order status updates to this endpoint
+
+**Features:**
+- Partners can order professional posters directly from the dashboard
+- Supports multiple sizes (12x18, 18x24, 24x36, 27x40)
+- Multiple frame styles (black metal, white metal, natural wood, etc.)
+- Different material finishes (matte, glossy, semi-gloss)
+- Automated order fulfillment and tracking
+- Wholesale pricing with revenue share options
+
+**Documentation:**
+- API Docs: https://www.artelo.io/artelo-api/documentation/introduction
+
+---
+
 ## 📞 Support Resources
 
 ### Service Support
@@ -416,6 +459,7 @@ Error: Invalid API key
 - **Stripe**: https://stripe.com/docs
 - **OpenAI**: https://platform.openai.com/docs
 - **Mapbox**: https://docs.mapbox.com
+- **Artelo**: https://www.artelo.io/artelo-api/documentation
 
 ### Community
 - **Next.js Discord**: https://nextjs.org/discord
@@ -442,6 +486,7 @@ Before proceeding with development:
 - [ ] Stripe test keys added
 - [ ] OpenAI key added
 - [ ] Mapbox token added
+- [ ] Artelo API credentials added
 
 ---
 

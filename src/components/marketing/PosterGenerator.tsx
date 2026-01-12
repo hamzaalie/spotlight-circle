@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Download, Loader2, FileImage, Palette, Printer, Users } from "lucide-react"
 import html2canvas from "html2canvas"
 import jsPDF from "jspdf"
+import { OrderPrintModal } from "./OrderPrintModal"
 
 interface PosterData {
   template: string
@@ -54,6 +55,8 @@ export default function PosterGenerator() {
   const [includeQR, setIncludeQR] = useState(true)
   const [includePhoto, setIncludePhoto] = useState(true)
   const [posterData, setPosterData] = useState<PosterData | null>(null)
+  const [showOrderModal, setShowOrderModal] = useState(false)
+  const [posterImageUrl, setPosterImageUrl] = useState("")
   const posterRef = useRef<HTMLDivElement>(null)
 
   const generatePosterData = async () => {
@@ -141,36 +144,10 @@ export default function PosterGenerator() {
 
       const imageData = canvas.toDataURL("image/png")
       
-      // Create a form to submit to VistaPrint or similar service
-      // For now, we'll prepare the data and show options
-      const printOptions = {
-        vistaprint: `https://www.vistaprint.com/upload-your-own.aspx`,
-        printful: `https://www.printful.com/custom-products`,
-        canva: `https://www.canva.com/create/posters/`,
-      }
-
-      // Show user options to choose print service
-      const choice = window.confirm(
-        "Would you like to:\n\n" +
-        "OK - Order from VistaPrint (Professional printing & shipping)\n" +
-        "Cancel - Download high-res file for local printing"
-      )
-
-      if (choice) {
-        // Open VistaPrint upload page
-        window.open(printOptions.vistaprint, '_blank')
-        // Also download the file for them to upload
-        const link = document.createElement("a")
-        link.download = `referral-poster-print-${Date.now()}.png`
-        link.href = imageData
-        link.click()
-      } else {
-        // Download high-res version
-        const link = document.createElement("a")
-        link.download = `referral-poster-highres-${Date.now()}.png`
-        link.href = imageData
-        link.click()
-      }
+      // Upload image to server or convert to blob URL
+      // For now, we'll use the data URL directly
+      setPosterImageUrl(imageData)
+      setShowOrderModal(true)
     } catch (error) {
       console.error("Print preparation error:", error)
       alert("Failed to prepare print file")
@@ -329,12 +306,21 @@ export default function PosterGenerator() {
                   ) : (
                     <Printer className="h-4 w-4 mr-2" />
                   )}
-                  Order Print
+                  Order Print via Artelo
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Order Print Modal */}
+      {posterImageUrl && (
+        <OrderPrintModal
+          open={showOrderModal}
+          onClose={() => setShowOrderModal(false)}
+          posterImageUrl={posterImageUrl}
+        />
       )}
     </div>
   )
