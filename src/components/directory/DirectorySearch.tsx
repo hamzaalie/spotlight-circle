@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { MapPin, Briefcase, Building2, Globe, Search, Loader2, ExternalLink, Map as MapIcon, Grid3x3 } from "lucide-react"
+import { MapPin, Briefcase, Building2, Globe, Search, Loader2, ExternalLink, Map as MapIcon, Grid3x3, BadgeCheck } from "lucide-react"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 
@@ -40,6 +40,9 @@ interface Professional {
   longitude?: number | null
   user: {
     id: string
+    subscription?: {
+      status: string
+    } | null
   }
 }
 
@@ -296,6 +299,17 @@ export default function DirectorySearch({
                     </h3>
                     {prof.profession && (
                       <p className="text-brand-teal-600 font-medium">{prof.profession}</p>
+                    )}
+                    {/* Membership Badge */}
+                    {prof.user.subscription?.status === 'ACTIVE' ? (
+                      <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-brand-gold-100 text-brand-gold-700 text-xs font-semibold rounded-full border border-brand-gold-300">
+                        <BadgeCheck className="h-3 w-3" />
+                        Spotlight Member
+                      </div>
+                    ) : (
+                      <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full border border-gray-300">
+                        Directory Member
+                      </div>
                     )}
                   </div>
 

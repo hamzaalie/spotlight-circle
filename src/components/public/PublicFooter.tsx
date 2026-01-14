@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Mail, MapPin } from "lucide-react"
+import { Mail, MapPin, Facebook, Instagram, Linkedin } from "lucide-react"
 
 export function PublicFooter() {
   const currentYear = new Date().getFullYear()
@@ -35,6 +35,38 @@ export function PublicFooter() {
             <p className="text-gray-600 text-sm mb-4">
               Building trusted professional referral networks powered by AI.
             </p>
+            
+            {/* Social Media Links */}
+            <div className="flex gap-3 mb-4">
+              <a
+                href="https://www.facebook.com/SpotlightCircles/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center h-9 w-9 rounded-lg bg-white border border-gray-300 text-gray-600 hover:border-brand-teal-400 hover:text-brand-teal-600 hover:shadow-md transition-all"
+                aria-label="Facebook"
+              >
+                <Facebook size={18} />
+              </a>
+              <a
+                href="https://www.instagram.com/spotlight_circles"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center h-9 w-9 rounded-lg bg-white border border-gray-300 text-gray-600 hover:border-brand-teal-400 hover:text-brand-teal-600 hover:shadow-md transition-all"
+                aria-label="Instagram"
+              >
+                <Instagram size={18} />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/spotlight-circles/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center h-9 w-9 rounded-lg bg-white border border-gray-300 text-gray-600 hover:border-brand-teal-400 hover:text-brand-teal-600 hover:shadow-md transition-all"
+                aria-label="LinkedIn"
+              >
+                <Linkedin size={18} />
+              </a>
+            </div>
+
             <div className="flex flex-col gap-2 text-sm text-gray-600">
               <a href="mailto:support@spotlightcircles.com" className="flex items-center gap-2 hover:text-brand-teal-600 transition-colors">
                 <Mail size={16} />

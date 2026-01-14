@@ -19,6 +19,11 @@ export default async function DirectoryPage() {
         select: {
           id: true,
           email: true,
+          subscription: {
+            select: {
+              status: true,
+            },
+          },
         },
       },
     },

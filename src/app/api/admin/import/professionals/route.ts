@@ -11,6 +11,7 @@ const professionalSchema = z.object({
   lastName: z.string().min(1),
   company: z.string().optional(),
   profession: z.string().min(1),
+  title: z.string().optional(),
   phone: z.string().optional(),
   website: z.string().url().optional().or(z.literal('')),
   street: z.string().optional(),
@@ -75,19 +76,20 @@ export async function POST(req: NextRequest) {
       try {
         // Validate data
         const validated = professionalSchema.parse({
-          email: prof.Email?.trim(),
-          firstName: prof['First Name']?.trim() || prof.FirstName?.trim(),
-          lastName: prof['Last Name']?.trim() || prof.LastName?.trim(),
-          company: prof.Company?.trim() || '',
-          profession: prof.Title?.trim() || prof.Profession?.trim() || 'Professional',
-          phone: prof.Phone?.trim() || '',
-          website: prof.Website?.trim() || '',
-          street: prof.Street?.trim() || '',
-          city: prof.City?.trim(),
-          state: prof.State?.trim() || '',
-          zipCode: prof['Zip Code']?.trim() || prof.ZipCode?.trim(),
-          country: prof.Country?.trim() || 'US',
-          subCategory: prof['Sub Category']?.trim() || prof.SubCategory?.trim() || '',
+          email: prof.email?.trim(),
+          firstName: prof.firstName?.trim(),
+          lastName: prof.lastName?.trim(),
+          company: prof.company?.trim() || '',
+          profession: prof.profession?.trim() || 'Professional',
+          title: prof.title?.trim() || '',
+          phone: prof.phone?.trim() || '',
+          website: prof.website?.trim() || '',
+          street: prof.street?.trim() || '',
+          city: prof.city?.trim(),
+          state: prof.state?.trim() || '',
+          zipCode: prof.zipCode?.trim(),
+          country: prof.country?.trim() || 'US',
+          subCategory: prof.subCategory?.trim() || '',
         });
 
         // Check if user already exists
@@ -188,8 +190,8 @@ export async function POST(req: NextRequest) {
       } catch (error) {
         console.error('Error importing professional:', error);
         
-        const email = prof.Email?.trim() || 'unknown';
-        const name = `${prof['First Name'] || prof.FirstName || ''} ${prof['Last Name'] || prof.LastName || ''}`.trim() || 'Unknown';
+        const email = prof.email?.trim() || 'unknown';
+        const name = `${prof.firstName || ''} ${prof.lastName || ''}`.trim() || 'Unknown';
         
         // Provide user-friendly error messages
         let errorMessage = 'Import failed';
@@ -198,6 +200,7 @@ export async function POST(req: NextRequest) {
             if (issue.path.includes('email')) return 'Invalid email address';
             if (issue.path.includes('firstName')) return 'First name is required';
             if (issue.path.includes('lastName')) return 'Last name is required';
+            if (issue.path.includes('profession')) return 'Profession is required';
             if (issue.path.includes('city')) return 'City is required';
             if (issue.path.includes('zipCode')) return 'Valid zip code is required';
             return issue.message;

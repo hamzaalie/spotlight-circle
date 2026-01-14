@@ -103,7 +103,8 @@ export default function CSVImportClient() {
               firstName: p["First Name"],
               lastName: p["Last Name"],
               company: p.Company,
-              profession: p["Sub Category"] || p.Title || 'Professional',
+              profession: p.Profession || p.Title || 'Professional',
+              title: p.Title,
               phone: p.Phone,
               website: p.Website,
               street: p.Street,
@@ -111,6 +112,7 @@ export default function CSVImportClient() {
               state: p.State,
               zipCode: p["Zip Code"],
               country: p.Country || 'US',
+              subCategory: p["Sub Category"],
             }))
 
             setTotalCount(transformedProfessionals.length)
