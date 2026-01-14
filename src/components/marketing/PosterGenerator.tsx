@@ -93,11 +93,43 @@ export default function PosterGenerator() {
 
     setGenerating(true)
     try {
-      const canvas = await html2canvas(posterRef.current, {
-        scale: 2,
+      // Get the poster element
+      const posterElement = posterRef.current
+
+      // Create a clone to avoid modifying the visible poster
+      const clone = posterElement.cloneNode(true) as HTMLElement
+      clone.style.position = 'absolute'
+      clone.style.left = '-9999px'
+      clone.style.width = '2550px'  // 8.5" at 300dpi
+      clone.style.height = '3300px' // 11" at 300dpi
+      clone.style.maxWidth = '2550px'
+      clone.style.transform = 'none'
+      document.body.appendChild(clone)
+
+      // Wait for images to load
+      const images = clone.getElementsByTagName('img')
+      await Promise.all(
+        Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve()
+          return new Promise((resolve) => {
+            img.onload = resolve
+            img.onerror = resolve
+          })
+        })
+      )
+
+      const canvas = await html2canvas(clone, {
+        scale: 1,
+        width: 2550,
+        height: 3300,
         backgroundColor: "#ffffff",
         logging: false,
+        useCORS: true,
+        allowTaint: true,
       })
+
+      // Remove clone
+      document.body.removeChild(clone)
 
       if (format === "png") {
         const link = document.createElement("a")
@@ -108,19 +140,11 @@ export default function PosterGenerator() {
         const imgData = canvas.toDataURL("image/png")
         const pdf = new jsPDF({
           orientation: "portrait",
-          unit: "mm",
-          format: "a4",
+          unit: "in",
+          format: "letter",
         })
 
-        const pdfWidth = pdf.internal.pageSize.getWidth()
-        const pdfHeight = pdf.internal.pageSize.getHeight()
-        const imgWidth = canvas.width
-        const imgHeight = canvas.height
-        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight)
-        const imgX = (pdfWidth - imgWidth * ratio) / 2
-        const imgY = 0
-
-        pdf.addImage(imgData, "PNG", imgX, imgY, imgWidth * ratio, imgHeight * ratio)
+        pdf.addImage(imgData, "PNG", 0, 0, 8.5, 11)
         pdf.save(`referral-poster-${Date.now()}.pdf`)
       }
     } catch (error) {
@@ -136,16 +160,47 @@ export default function PosterGenerator() {
 
     setGenerating(true)
     try {
-      const canvas = await html2canvas(posterRef.current, {
-        scale: 3, // Higher quality for printing
+      // Get the poster element
+      const posterElement = posterRef.current
+
+      // Create a clone to avoid modifying the visible poster
+      const clone = posterElement.cloneNode(true) as HTMLElement
+      clone.style.position = 'absolute'
+      clone.style.left = '-9999px'
+      clone.style.width = '2550px'  // 8.5" at 300dpi
+      clone.style.height = '3300px' // 11" at 300dpi
+      clone.style.maxWidth = '2550px'
+      clone.style.transform = 'none'
+      document.body.appendChild(clone)
+
+      // Wait for images to load
+      const images = clone.getElementsByTagName('img')
+      await Promise.all(
+        Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve()
+          return new Promise((resolve) => {
+            img.onload = resolve
+            img.onerror = resolve
+          })
+        })
+      )
+
+      const canvas = await html2canvas(clone, {
+        scale: 1,
+        width: 2550,
+        height: 3300,
         backgroundColor: "#ffffff",
         logging: false,
+        useCORS: true,
+        allowTaint: true,
       })
+
+      // Remove clone
+      document.body.removeChild(clone)
 
       const imageData = canvas.toDataURL("image/png")
       
-      // Upload image to server or convert to blob URL
-      // For now, we'll use the data URL directly
+      // Use the data URL for printing
       setPosterImageUrl(imageData)
       setShowOrderModal(true)
     } catch (error) {
