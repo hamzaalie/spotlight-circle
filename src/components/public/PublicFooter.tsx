@@ -35,9 +35,20 @@ export function PublicFooter() {
             <p className="text-gray-600 text-sm mb-4">
               Building trusted professional referral networks powered by AI.
             </p>
+
+            <div className="flex flex-col gap-2 text-sm text-gray-600 mb-4">
+              <a href="mailto:support@spotlightcircles.com" className="flex items-center gap-2 hover:text-brand-teal-600 transition-colors">
+                <Mail size={16} />
+                support@spotlightcircles.com
+              </a>
+              <div className="flex items-center gap-2">
+                <MapPin size={16} />
+                San Francisco, CA
+              </div>
+            </div>
             
             {/* Social Media Links */}
-            <div className="flex gap-3 mb-4">
+            <div className="flex gap-3">
               <a
                 href="https://www.facebook.com/SpotlightCircles/"
                 target="_blank"
@@ -65,17 +76,6 @@ export function PublicFooter() {
               >
                 <Linkedin size={18} />
               </a>
-            </div>
-
-            <div className="flex flex-col gap-2 text-sm text-gray-600">
-              <a href="mailto:support@spotlightcircles.com" className="flex items-center gap-2 hover:text-brand-teal-600 transition-colors">
-                <Mail size={16} />
-                support@spotlightcircles.com
-              </a>
-              <div className="flex items-center gap-2">
-                <MapPin size={16} />
-                San Francisco, CA
-              </div>
             </div>
           </div>
 

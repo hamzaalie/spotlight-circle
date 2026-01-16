@@ -51,20 +51,29 @@ export async function POST(req: NextRequest) {
     const validatedData = createOrderSchema.parse(body);
 
     // Step 1: Get pricing from Artelo
-    const pricing = await getArteloPricing({
-      product: {
-        type: 'poster',
-        size: validatedData.size,
-        image_url: validatedData.posterImageUrl,
-        frame: validatedData.frameStyle,
-        material: validatedData.material,
-      },
-      quantity: validatedData.quantity,
-      shipping_address: {
-        zip: validatedData.shippingZip,
-        country: validatedData.shippingCountry,
-      },
-    });
+    let pricing;
+    try {
+      pricing = await getArteloPricing({
+        product: {
+          type: 'poster',
+          size: validatedData.size,
+          image_url: validatedData.posterImageUrl,
+          frame: validatedData.frameStyle,
+          material: validatedData.material,
+        },
+        quantity: validatedData.quantity,
+        shipping_address: {
+          zip: validatedData.shippingZip,
+          country: validatedData.shippingCountry,
+        },
+      });
+    } catch (error: any) {
+      console.error('Artelo pricing error:', error);
+      return NextResponse.json(
+        { error: 'Failed to get pricing from print provider', details: error.message },
+        { status: 500 }
+      );
+    }
 
     // Step 2: Create Stripe Payment Intent
     const paymentIntent = await stripe.paymentIntents.create({
