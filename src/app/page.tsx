@@ -512,7 +512,7 @@ export default function HomePage() {
                 <div className="mb-8 text-center border-b border-gray-100 pb-6">
                   <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Total Exposure</h4>
                   <div className="text-4xl font-extrabold text-gray-900">
-                    From <span className="text-gray-500 line-through mr-2 text-3xl">1,000</span> to <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal-600 to-brand-gold-600">10,000</span>
+                    From 1,000 to <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal-600 to-brand-gold-600">10,000</span>
                   </div>
                   <div className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
                     <TrendingUp className="w-3 h-3" />

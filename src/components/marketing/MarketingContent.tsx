@@ -46,7 +46,7 @@ export default function MarketingContent({ profile, profileUrl }: MarketingConte
         <div className="grid md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <p className="text-gray-700">This page answers that question instantly.</p>
-            <p className="text-gray-700">Members who share their Circle receive up to <span className="font-bold text-2xl text-brand-teal-700">3× more referrals*</span></p>
+            <p className="text-gray-700">Members who share their Circle receive up to <span className="font-bold text-2xl text-brand-teal-700">5× more referrals</span> — more chances to connect, more leads that fit.</p>
             <div className="flex flex-wrap gap-4 mt-2">
               <span className="text-gray-700">• No ads</span>
               <span className="text-gray-700">• No selling</span>
@@ -63,7 +63,7 @@ export default function MarketingContent({ profile, profileUrl }: MarketingConte
             <div className="w-12 h-12 rounded-full bg-brand-teal-600 text-white flex items-center justify-center font-bold text-xl">
               1
             </div>
-            <CardTitle className="text-2xl text-gray-800">Share Your Referral Link or QR Code Anywhere Clients See You</CardTitle>
+            <CardTitle className="text-2xl text-gray-800">Share Your Referral Link or <span className="font-semibold">Copy QR Code</span> Anywhere Clients See You</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="pt-8 bg-gray-50">
@@ -133,7 +133,7 @@ export default function MarketingContent({ profile, profileUrl }: MarketingConte
                   >
                     <a href={profile.qrCodeUrl} download>
                       <QrCode className="h-5 w-5 mr-2" />
-                      QR Code
+                      Copy QR Code
                     </a>
                   </Button>
                 )}
@@ -169,7 +169,7 @@ export default function MarketingContent({ profile, profileUrl }: MarketingConte
             </div>
             <div>
               <CardTitle className="text-2xl text-gray-800">
-                Multipurpose In-Office Promotion <span className="text-brand-teal-600">(High Impact)</span>
+                Create a Poster for your Lobby or Waiting Room
               </CardTitle>
             </div>
           </div>
@@ -177,7 +177,7 @@ export default function MarketingContent({ profile, profileUrl }: MarketingConte
         <CardContent className="pt-8 bg-gray-50">
           <div className="grid md:grid-cols-[1fr,1.3fr] gap-8">
             <div>
-              <p className="text-lg text-gray-700 mb-6">Turn foot traffic into referral growth.</p>
+              <p className="text-lg text-gray-700 mb-6">Bring value to your customers while they wait.</p>
               
               <div className="grid grid-cols-2 gap-x-6 gap-y-3 mb-6">
                 <div className="flex items-center gap-2">
@@ -192,14 +192,7 @@ export default function MarketingContent({ profile, profileUrl }: MarketingConte
                   <Check className="h-5 w-5 text-brand-teal-600 flex-shrink-0" />
                   <span className="text-base text-gray-700">Simple <span className="italic">and effective</span> awareness</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Check className="h-5 w-5 text-brand-teal-600 flex-shrink-0" />
-                  <span className="text-base text-gray-700">Intake folders</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="h-5 w-5 text-brand-teal-600 flex-shrink-0" />
-                  <span className="text-base text-gray-700">Rack straight to</span>
-                </div>
+
                 <div className="flex items-center gap-2">
                   <Check className="h-5 w-5 text-brand-teal-600 flex-shrink-0" />
                   <span className="text-base text-gray-700">Business cards</span>
@@ -234,13 +227,15 @@ export default function MarketingContent({ profile, profileUrl }: MarketingConte
                   {/* Professional profiles grid */}
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     {[
-                      { name: 'Jason Smint', role: 'Nototor' },
-                      { name: 'Poor Jonnen', role: 'Attorney' },
-                      { name: 'Marty Clack', role: 'Pinurttyl annus' },
-                      { name: 'Marily Clack', role: 'Home Inspector' }
+                      { name: 'Jason Smint', role: 'Nototor', emoji: '😊', color: 'bg-blue-400' },
+                      { name: 'Poor Jonnen', role: 'Attorney', emoji: '😊', color: 'bg-purple-400' },
+                      { name: 'Marty Clack', role: 'Pinurttyl annus', emoji: '😊', color: 'bg-pink-400' },
+                      { name: 'Marily Clack', role: 'Home Inspector', emoji: '😊', color: 'bg-amber-400' }
                     ].map((prof, idx) => (
                       <div key={idx} className="bg-gray-100 rounded-lg p-3 text-center border-2 border-gray-200">
-                        <div className="w-16 h-16 bg-gradient-to-br from-gray-300 to-gray-400 rounded-full mx-auto mb-2"></div>
+                        <div className={`w-16 h-16 ${prof.color} rounded-full mx-auto mb-2 flex items-center justify-center text-4xl`}>
+                          {prof.emoji}
+                        </div>
                         <p className="text-xs font-bold text-gray-900 leading-tight">{prof.name}</p>
                         <p className="text-[10px] text-gray-600 mt-0.5">{prof.role}</p>
                       </div>
