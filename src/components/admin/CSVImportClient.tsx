@@ -13,6 +13,7 @@ interface ParsedProfessional {
   "First Name": string
   "Last Name": string
   Company?: string
+  Profession?: string
   Title?: string
   Phone?: string
   Website?: string
