@@ -86,6 +86,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Step 3: Create print order in database (PENDING status)
+    // Order will be submitted to Artelo after successful payment confirmation
     const printOrder = await prisma.printOrder.create({
       data: {
         userId: session.user.id,
