@@ -527,7 +527,6 @@ export default function HomePage() {
                   <div className="flex flex-col items-center gap-2 group w-1/3">
                     <span className="text-gray-500 font-bold mb-1 group-hover:text-brand-teal-600 transition-colors">1k</span>
                     <div className="w-full bg-gray-200 rounded-t-xl h-16 group-hover:bg-brand-teal-200 transition-all duration-500 relative overflow-hidden">
-                      <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-300"></div>
                     </div>
                     <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">You</span>
                   </div>
@@ -536,7 +535,6 @@ export default function HomePage() {
                   <div className="flex flex-col items-center gap-2 group w-1/3">
                     <span className="text-gray-600 font-bold mb-1 group-hover:text-brand-teal-600 transition-colors">2k</span>
                     <div className="w-full bg-brand-teal-300/50 rounded-t-xl h-28 group-hover:bg-brand-teal-300 transition-all duration-500 relative overflow-hidden">
-                       <div className="absolute bottom-0 left-0 w-full h-1 bg-brand-teal-400/50"></div>
                     </div>
                     <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">+ Partner</span>
                   </div>
@@ -545,8 +543,6 @@ export default function HomePage() {
                   <div className="flex flex-col items-center gap-2 group w-1/3">
                     <span className="text-brand-teal-700 font-bold text-xl mb-1 drop-shadow-sm">10k</span>
                     <div className="w-full bg-gradient-to-t from-brand-teal-600 to-brand-teal-400 rounded-t-xl h-56 shadow-lg shadow-brand-teal-500/30 relative overflow-hidden">
-                      {/* Animated Shine */}
-                      <div className="absolute top-0 left-0 w-full h-full bg-white/20 -skew-y-12 transform -translate-y-full animate-[shimmer_3s_infinite]"></div>
                     </div>
                     <span className="text-xs font-bold text-brand-teal-700 uppercase tracking-wide">Full Circle</span>
                   </div>
